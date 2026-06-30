@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HFF League — World Cup 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold:#C9A84C;--gold-dim:#7A6230;--bg:#0A0A0A;--surface:#111111;
+    --surface2:#1A1A1A;--border:#2A2A2A;--text:#F0EDE6;--text-dim:#888;
+    --green:#4CAF50;--red:#E53935;--draw:#FFA726;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+  .header{background:linear-gradient(180deg,#1a1400 0%,var(--bg) 100%);border-bottom:1px solid var(--gold-dim);padding:24px 32px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .league-name{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.08em;color:var(--gold);line-height:1}
+  .tournament-name{font-family:'Oswald',sans-serif;font-size:.85rem;font-weight:400;letter-spacing:.2em;color:var(--text-dim);text-transform:uppercase}
+  .trophy{font-size:2rem}
+  .last-updated{font-size:.75rem;color:var(--text-dim);letter-spacing:.05em}
+  .tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 32px}
+  .tab{padding:12px 20px;font-family:'Oswald',sans-serif;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;background:none;border-top:none;border-left:none;border-right:none}
+  .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+  .tab:hover:not(.active){color:var(--text)}
+  .status-bar{display:flex;gap:20px;padding:10px 32px;background:var(--surface);border-bottom:1px solid var(--border);font-size:.72rem;color:var(--text-dim);letter-spacing:.05em;flex-wrap:wrap}
+  .status-item{display:flex;align-items:center;gap:6px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .content{max-width:1100px;margin:0 auto;padding:28px 24px}
+  .leaderboard{display:flex;flex-direction:column;gap:10px}
+  .leader-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;display:grid;grid-template-columns:36px 140px 1fr auto;align-items:center;gap:16px;transition:border-color .2s;cursor:pointer}
+  .leader-card:hover{border-color:var(--gold-dim)}
+  .leader-card.rank-1{border-color:var(--gold);background:linear-gradient(90deg,#1a1400 0%,var(--surface) 60%)}
+  .leader-card.rank-2{border-color:#888;background:linear-gradient(90deg,#141414 0%,var(--surface) 60%)}
+  .leader-card.rank-3{border-color:#8B5E3C;background:linear-gradient(90deg,#130d08 0%,var(--surface) 60%)}
+  .rank-num{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--text-dim);text-align:center;line-height:1}
+  .rank-1 .rank-num{color:var(--gold)}.rank-2 .rank-num{color:#aaa}.rank-3 .rank-num{color:#CD7F32}
+  .player-info{display:flex;flex-direction:column;gap:2px}
+  .player-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.05em;line-height:1}
+  .player-tagline{font-size:.65rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase}
+  .teams-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .team-pill{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:3px 8px;font-size:.7rem;font-weight:500;color:var(--text-dim);letter-spacing:.03em}
+  .team-pill.alive{border-color:var(--gold-dim);color:var(--text)}
+  .team-pill.eliminated{opacity:.4;text-decoration:line-through}
+  .score-block{text-align:right;min-width:90px}
+  .score-pts{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);line-height:1}
+  .score-label{font-size:.65rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase}
+  .score-proj{font-size:.7rem;color:var(--text-dim);margin-top:2px}
+  .breakdown-panel{display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:16px 20px}
+  .breakdown-panel.open{display:block}
+  .breakdown-title{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+  .breakdown-teams{display:flex;flex-direction:column;gap:8px}
+  .breakdown-team{display:grid;grid-template-columns:155px 1fr auto;align-items:center;gap:12px;font-size:.8rem}
+  .breakdown-team-name{display:flex;align-items:center;gap:6px;font-weight:600}
+  .match-results{display:flex;gap:4px;flex-wrap:wrap}
+  .result-badge{width:22px;height:22px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
+  .result-badge.W{background:var(--green);color:#000}
+  .result-badge.D{background:var(--draw);color:#000}
+  .result-badge.L{background:var(--red);color:#fff}
+  .result-badge.adv{background:var(--gold);color:#000;font-size:.5rem;width:30px}
+  .result-badge.elim{background:#333;color:#666;font-size:.5rem;width:30px}
+  .team-pts{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold);text-align:right;min-width:40px}
+  .scoring-ref{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px}
+  .scoring-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px}
+  .scoring-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:3px;font-size:.8rem}
+  .scoring-pts{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold)}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;color:var(--gold);margin-bottom:16px}
+  .hidden{display:none}
+  @media(max-width:640px){
+    .leader-card{grid-template-columns:28px 100px 1fr auto;gap:10px;padding:12px 14px}
+    .player-name{font-size:1.1rem}.content{padding:16px 12px}
+    .tabs{padding:0 12px}.header{padding:16px}.tab{padding:10px 12px;font-size:.72rem}
+    .breakdown-team{grid-template-columns:120px 1fr auto}
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="league-name">HFF League</div>
+    <div class="tournament-name">World Cup 2026 · Fantasy Tracker</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="trophy">🏆</span>
+    <div class="last-updated" id="lastUpdated">Group Stage Complete · R32 Underway</div>
+  </div>
+</div>
+<div class="status-bar">
+  <div class="status-item"><div class="dot"></div> Round of 32 Active</div>
+  <div class="status-item">📅 R32 — Jun 28 – Jul 4</div>
+  <div class="status-item">🎯 W=2 · D=1 · R32=3 · R16=4 · QF=5 · SF=6 · F=7 · 🏆=8</div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('leaderboard',event)">Leaderboard</button>
+  <button class="tab" onclick="showTab('scoring',event)">Scoring Rules</button>
+</div>
+<div class="content">
+  <div id="tab-leaderboard"><div class="leaderboard" id="leaderboard"></div></div>
+  <div id="tab-scoring" class="hidden">
+    <div class="scoring-ref">
+      <div class="section-title">Scoring Reference</div>
+      <div class="scoring-grid">
+        <div class="scoring-item"><span>Group Stage Win</span><span class="scoring-pts">2 pts</span></div>
+        <div class="scoring-item"><span>Group Stage Draw</span><span class="scoring-pts">1 pt</span></div>
+        <div class="scoring-item"><span>Advance to R32</span><span class="scoring-pts">3 pts</span></div>
+        <div class="scoring-item"><span>Advance to R16</span><span class="scoring-pts">4 pts</span></div>
+        <div class="scoring-item"><span>Advance to QF</span><span class="scoring-pts">5 pts</span></div>
+        <div class="scoring-item"><span>Advance to SF</span><span class="scoring-pts">6 pts</span></div>
+        <div class="scoring-item"><span>Advance to Final</span><span class="scoring-pts">7 pts</span></div>
+        <div class="scoring-item"><span>Win World Cup</span><span class="scoring-pts">8 pts</span></div>
+      </div>
+      <div style="margin-top:16px;font-size:.75rem;color:var(--text-dim);line-height:1.6">
+        <strong style="color:var(--text)">Note:</strong> Group stage W/D points cumulative across all 3 matches. Advancement points awarded once that full round completes.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const FLAGS = {
+  'Brazil':'🇧🇷','Croatia':'🇭🇷','Ivory Coast':'🇨🇮','Cape Verde':'🇨🇻',
+  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Mexico':'🇲🇽','Senegal':'🇸🇳','Uzbekistan':'🇺🇿',
+  'Norway':'🇳🇴','Colombia':'🇨🇴','Bosnia & Herz.':'🇧🇦','Egypt':'🇪🇬',
+  'Netherlands':'🇳🇱','USA':'🇺🇸','Algeria':'🇩🇿','Czechia':'🇨🇿',
+  'Spain':'🇪🇸','Ecuador':'🇪🇨','Sweden':'🇸🇪','Panama':'🇵🇦',
+  'Germany':'🇩🇪','Morocco':'🇲🇦','Paraguay':'🇵🇾','Iran':'🇮🇷',
+  'Argentina':'🇦🇷','Japan':'🇯🇵','Canada':'🇨🇦','Australia':'🇦🇺',
+  'France':'🇫🇷','Austria':'🇦🇹','Turkey':'🇹🇷','Haiti':'🇭🇹',
+  'Portugal':'🇵🇹','Switzerland':'🇨🇭','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Tunisia':'🇹🇳',
+  'Belgium':'🇧🇪','Uruguay':'🇺🇾','Ghana':'🇬🇭','South Korea':'🇰🇷'
+};
+const TAGLINES = {
+  'Burk':'Blood. Sweat. Brasil.','Rami':'Clinical. Composed. Champion.',
+  'Brett':'Cold Weather. Hot Takes.','Kyle':'Total Football. Total Chaos.',
+  'Tyler':'Ice in Veins.','Erich':'The Professor.',
+  'JR':'Press. Attack. Repeat.','Van':'Adventure Mode: ON.',
+  'Zack':'Play Fast. Win Big.','Austin':'Built Different.'
+};
+const ADV_PTS   = {R32:3,R16:4,QF:5,SF:6,F:7,W:8};
+const ADV_LABELS= {R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'Final',W:'Champ'};
+
+// Projected additional pts from knockout rounds (R32 onward) per alive team
+const PROJ_BONUS = {
+  'France':33,'Argentina':33,'Spain':28,'Brazil':28,
+  'England':21,'Portugal':21,'Netherlands':18,'Germany':18,
+  'Mexico':18,'Colombia':14,'Norway':14,'Morocco':14,
+  'Switzerland':14,'Japan':14,'Belgium':10,'Egypt':10,
+  'Croatia':7,'Ivory Coast':7,'Ecuador':7,'Sweden':7,
+  'Canada':7,'Austria':7,'Paraguay':7,'Bosnia & Herz.':7,
+  'Algeria':7,'Ghana':7,'Senegal':7,'Cape Verde':7,
+  // Eliminated — no bonus
+  'Uzbekistan':0,'Haiti':0,'Tunisia':0,'Panama':0,
+  'Turkey':0,'Scotland':0,'Iran':0,'South Korea':0,'Uruguay':0,'Australia':0,'Czechia':0
+};
+
+// All group stage results from provided screenshots.
+// results: 3 group stage matches W/D/L
+// advanced: knockout rounds reached — R32 awarded to all 32 qualifiers
+// eliminated: did not qualify for R32
+const PLAYERS = [
+  { name:'Brett', teams:[
+    { name:'Norway',        results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { name:'Colombia',      results:['W','D','W'], advanced:['R32'], eliminated:false },
+    { name:'Bosnia & Herz.',results:['D','L','W'], advanced:['R32'], eliminated:false },
+    { name:'Egypt',         results:['D','W','D'], advanced:['R32'], eliminated:false },
+  ]},
+  { name:'Rami', teams:[
+    { name:'England',    results:['W','D','W'], advanced:['R32'], eliminated:false },
+    { name:'Mexico',     results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Senegal',    results:['L','L','W'], advanced:['R32'], eliminated:false },
+    { name:'Uzbekistan', results:['L','L','L'], advanced:[],      eliminated:true  },
+  ]},
+  { name:'Van', teams:[
+    { name:'Argentina', results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Japan',     results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { name:'Canada',    results:['D','W','L'], advanced:['R32'], eliminated:false },
+    { name:'Australia', results:['L','L','D'], advanced:[],      eliminated:true  },
+  ]},
+  { name:'Tyler', teams:[
+    { name:'France',  results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Austria', results:['W','L','D'], advanced:['R32'], eliminated:false },
+    { name:'Turkey',  results:['W','L','W'], advanced:[],      eliminated:true  },
+    { name:'Haiti',   results:['L','L','L'], advanced:[],      eliminated:true  },
+  ]},
+  { name:'Erich', teams:[
+    { name:'Spain',   results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Ecuador', results:['L','D','W'], advanced:['R32'], eliminated:false },
+    { name:'Sweden',  results:['W','L','D'], advanced:['R32'], eliminated:false },
+    { name:'Panama',  results:['D','L','L'], advanced:[],      eliminated:true  },
+  ]},
+  { name:'Burk', teams:[
+    { name:'Brazil',      results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Croatia',     results:['L','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Ivory Coast', results:['W','L','W'], advanced:['R32'], eliminated:false },
+    { name:'Cape Verde',  results:['D','D','D'], advanced:['R32'], eliminated:false },
+  ]},
+  { name:'Zack', teams:[
+    { name:'Portugal',    results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { name:'Switzerland', results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Scotland',    results:['W','L','L'], advanced:[],      eliminated:true  },
+    { name:'Tunisia',     results:['L','L','L'], advanced:[],      eliminated:true  },
+  ]},
+  { name:'JR', teams:[
+    { name:'Germany',  results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { name:'Morocco',  results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { name:'Paraguay', results:['L','W','D'], advanced:['R32'], eliminated:false },
+    { name:'Iran',     results:['D','D','D'], advanced:[],      eliminated:true  },
+  ]},
+  { name:'Kyle', teams:[
+    { name:'Netherlands', results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { name:'USA',         results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { name:'Algeria',     results:['L','W','D'], advanced:['R32'], eliminated:false },
+    { name:'Czechia',     results:['L','D','L'], advanced:[],      eliminated:true  },
+  ]},
+  { name:'Austin', teams:[
+    { name:'Belgium',     results:['D','D','W'], advanced:['R32'], eliminated:false },
+    { name:'Uruguay',     results:['D','D','L'], advanced:[],      eliminated:true  },
+    { name:'Ghana',       results:['W','D','L'], advanced:['R32'], eliminated:false },
+    { name:'South Korea', results:['W','L','L'], advanced:[],      eliminated:true  },
+  ]},
+];
+
+function calcTeamPts(t) {
+  let pts = 0;
+  t.results.forEach(r => { if(r==='W') pts+=2; else if(r==='D') pts+=1; });
+  t.advanced.forEach(s => { pts += (ADV_PTS[s]||0); });
+  return pts;
+}
+function calcPlayerPts(p) { return p.teams.reduce((s,t)=>s+calcTeamPts(t),0); }
+function calcProjected(p) {
+  return calcPlayerPts(p) + p.teams.reduce((s,t)=>s+(PROJ_BONUS[t.name]||0),0);
+}
+function getSorted() { return [...PLAYERS].sort((a,b)=>calcPlayerPts(b)-calcPlayerPts(a)); }
+
+let openBreakdown = null;
+function toggleBreakdown(name) { openBreakdown = openBreakdown===name?null:name; render(); }
+
+function render() {
+  const sorted = getSorted();
+  const container = document.getElementById('leaderboard');
+  container.innerHTML = '';
+  sorted.forEach((player, i) => {
+    const rank = i+1, pts = calcPlayerPts(player), proj = calcProjected(player);
+    const isOpen = openBreakdown === player.name;
+
+    const card = document.createElement('div');
+    card.className = `leader-card rank-${rank<=3?rank:'other'}`;
+    card.onclick = () => toggleBreakdown(player.name);
+
+    const pills = player.teams.map(t =>
+      `<span class="team-pill ${t.eliminated?'eliminated':'alive'}">${FLAGS[t.name]||''} ${t.name}</span>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="rank-num">${rank}</div>
+      <div class="player-info">
+        <div class="player-name">${player.name}</div>
+        <div class="player-tagline">${TAGLINES[player.name]||''}</div>
+      </div>
+      <div class="teams-row">${pills}</div>
+      <div class="score-block">
+        <div class="score-pts">${pts}</div>
+        <div class="score-label">pts</div>
+        <div class="score-proj">proj ${proj}</div>
+      </div>`;
+    container.appendChild(card);
+
+    const panel = document.createElement('div');
+    panel.className = `breakdown-panel ${isOpen?'open':''}`;
+    const teamsHTML = player.teams.map(t => {
+      const tPts = calcTeamPts(t);
+      const resHTML = t.results.map(r=>`<span class="result-badge ${r}">${r}</span>`).join('');
+      const advHTML = t.advanced.map(a=>`<span class="result-badge adv">${ADV_LABELS[a]}</span>`).join('');
+      const elimBadge = t.eliminated ? `<span class="result-badge elim">OUT</span>` : '';
+      return `<div class="breakdown-team" style="${t.eliminated?'opacity:.5':''}">
+        <div class="breakdown-team-name">${FLAGS[t.name]||''} ${t.name}</div>
+        <div class="match-results">${resHTML}${advHTML}${elimBadge}</div>
+        <div class="team-pts">${tPts}</div>
+      </div>`;
+    }).join('');
+    panel.innerHTML = `<div class="breakdown-title">Team Breakdown — click to collapse</div><div class="breakdown-teams">${teamsHTML}</div>`;
+    container.appendChild(panel);
+  });
+}
+
+function showTab(tab, e) {
+  document.getElementById('tab-leaderboard').classList.toggle('hidden', tab!=='leaderboard');
+  document.getElementById('tab-scoring').classList.toggle('hidden', tab!=='scoring');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(e&&e.target) e.target.classList.add('active');
+}
+
+render();
+document.getElementById('lastUpdated').textContent = 'Updated Jun 28, 2026 · Group Stage Final';
+</script>
+</body>
+</html>
