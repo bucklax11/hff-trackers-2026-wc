@@ -19,12 +19,13 @@
   .trophy{font-size:2rem}
   .last-updated{font-size:.75rem;color:var(--text-dim);letter-spacing:.05em}
   .tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 32px}
-  .tab{padding:12px 20px;font-family:'Oswald',sans-serif;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;background:none;border-top:none;border-left:none;border-right:none}
-  .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+  .tab{padding:12px 20px;font-family:'Oswald',sans-serif;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;background:none;border:none}
+  .tab.active{color:var(--gold);border-bottom:2px solid var(--gold)}
   .tab:hover:not(.active){color:var(--text)}
   .status-bar{display:flex;gap:20px;padding:10px 32px;background:var(--surface);border-bottom:1px solid var(--border);font-size:.72rem;color:var(--text-dim);letter-spacing:.05em;flex-wrap:wrap}
   .status-item{display:flex;align-items:center;gap:6px}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+  .dot.offline{background:var(--red);animation:none}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
   .content{max-width:1100px;margin:0 auto;padding:28px 24px}
   .leaderboard{display:flex;flex-direction:column;gap:10px}
@@ -48,12 +49,12 @@
   .score-proj{font-size:.7rem;color:var(--text-dim);margin-top:2px}
   .breakdown-panel{display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:16px 20px}
   .breakdown-panel.open{display:block}
-  .breakdown-title{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+  .breakdown-title{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
   .breakdown-teams{display:flex;flex-direction:column;gap:8px}
   .breakdown-team{display:grid;grid-template-columns:155px 1fr auto;align-items:center;gap:12px;font-size:.8rem}
   .breakdown-team-name{display:flex;align-items:center;gap:6px;font-weight:600}
   .match-results{display:flex;gap:4px;flex-wrap:wrap}
-  .result-badge{width:22px;height:22px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
+  .result-badge{width:22px;height:22px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;cursor:default}
   .result-badge.W{background:var(--green);color:#000}
   .result-badge.D{background:var(--draw);color:#000}
   .result-badge.L{background:var(--red);color:#fff}
@@ -66,11 +67,30 @@
   .scoring-pts{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold)}
   .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;color:var(--gold);margin-bottom:16px}
   .hidden{display:none}
+
+  /* ADMIN PANEL */
+  .admin-toggle{position:fixed;bottom:16px;right:16px;width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:.9rem;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center}
+  .admin-toggle:hover{border-color:var(--gold-dim);color:var(--gold)}
+  .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .admin-modal.open{display:flex}
+  .admin-box{background:var(--surface);border:1px solid var(--gold-dim);border-radius:6px;padding:24px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto}
+  .admin-box h3{font-family:'Bebas Neue',sans-serif;color:var(--gold);font-size:1.4rem;margin-bottom:16px;letter-spacing:.05em}
+  .admin-box input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:4px;font-size:.9rem;margin-bottom:12px}
+  .admin-box select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:4px;font-size:.8rem}
+  .admin-btn{background:var(--gold);color:#000;border:none;padding:10px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.85rem;width:100%}
+  .admin-btn:hover{background:var(--gold-light)}
+  .admin-btn.secondary{background:var(--surface2);color:var(--text-dim);margin-top:8px}
+  .admin-row{display:grid;grid-template-columns:1fr auto auto auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem}
+  .admin-close{position:absolute;top:16px;right:20px;cursor:pointer;color:var(--text-dim);font-size:1.4rem}
+  .admin-section{margin-bottom:20px}
+  .admin-section label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px}
+
   @media(max-width:640px){
     .leader-card{grid-template-columns:28px 100px 1fr auto;gap:10px;padding:12px 14px}
     .player-name{font-size:1.1rem}.content{padding:16px 12px}
     .tabs{padding:0 12px}.header{padding:16px}.tab{padding:10px 12px;font-size:.72rem}
     .breakdown-team{grid-template-columns:120px 1fr auto}
+    .admin-row{grid-template-columns:1fr;gap:4px}
   }
 </style>
 </head>
@@ -82,12 +102,11 @@
   </div>
   <div style="display:flex;align-items:center;gap:16px">
     <span class="trophy">🏆</span>
-    <div class="last-updated" id="lastUpdated">Group Stage Complete · R32 Underway</div>
+    <div class="last-updated" id="lastUpdated">Connecting...</div>
   </div>
 </div>
 <div class="status-bar">
-  <div class="status-item"><div class="dot"></div> Round of 32 Active</div>
-  <div class="status-item">📅 R32 — Jun 28 – Jul 4</div>
+  <div class="status-item"><div class="dot" id="connDot"></div> <span id="connText">Connecting to Firebase...</span></div>
   <div class="status-item">🎯 W=2 · D=1 · R32=3 · R16=4 · QF=5 · SF=6 · F=7 · 🏆=8</div>
 </div>
 <div class="tabs">
@@ -116,182 +135,342 @@
   </div>
 </div>
 
-<script>
-const FLAGS = {
-  'Brazil':'🇧🇷','Croatia':'🇭🇷','Ivory Coast':'🇨🇮','Cape Verde':'🇨🇻',
-  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Mexico':'🇲🇽','Senegal':'🇸🇳','Uzbekistan':'🇺🇿',
-  'Norway':'🇳🇴','Colombia':'🇨🇴','Bosnia & Herz.':'🇧🇦','Egypt':'🇪🇬',
-  'Netherlands':'🇳🇱','USA':'🇺🇸','Algeria':'🇩🇿','Czechia':'🇨🇿',
-  'Spain':'🇪🇸','Ecuador':'🇪🇨','Sweden':'🇸🇪','Panama':'🇵🇦',
-  'Germany':'🇩🇪','Morocco':'🇲🇦','Paraguay':'🇵🇾','Iran':'🇮🇷',
-  'Argentina':'🇦🇷','Japan':'🇯🇵','Canada':'🇨🇦','Australia':'🇦🇺',
-  'France':'🇫🇷','Austria':'🇦🇹','Turkey':'🇹🇷','Haiti':'🇭🇹',
-  'Portugal':'🇵🇹','Switzerland':'🇨🇭','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Tunisia':'🇹🇳',
-  'Belgium':'🇧🇪','Uruguay':'🇺🇾','Ghana':'🇬🇭','South Korea':'🇰🇷'
-};
-const TAGLINES = {
-  'Burk':'Blood. Sweat. Brasil.','Rami':'Clinical. Composed. Champion.',
-  'Brett':'Cold Weather. Hot Takes.','Kyle':'Total Football. Total Chaos.',
-  'Tyler':'Ice in Veins.','Erich':'The Professor.',
-  'JR':'Press. Attack. Repeat.','Van':'Adventure Mode: ON.',
-  'Zack':'Play Fast. Win Big.','Austin':'Built Different.'
-};
-const ADV_PTS   = {R32:3,R16:4,QF:5,SF:6,F:7,W:8};
-const ADV_LABELS= {R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'Final',W:'Champ'};
+<button class="admin-toggle" onclick="openAdmin()" title="Admin">⚙️</button>
 
-// Projected additional pts from knockout rounds (R32 onward) per alive team
-const PROJ_BONUS = {
-  'France':33,'Argentina':33,'Spain':28,'Brazil':28,
-  'England':21,'Portugal':21,'Netherlands':18,'Germany':18,
-  'Mexico':18,'Colombia':14,'Norway':14,'Morocco':14,
-  'Switzerland':14,'Japan':14,'Belgium':10,'Egypt':10,
-  'Croatia':7,'Ivory Coast':7,'Ecuador':7,'Sweden':7,
-  'Canada':7,'Austria':7,'Paraguay':7,'Bosnia & Herz.':7,
-  'Algeria':7,'Ghana':7,'Senegal':7,'Cape Verde':7,
-  // Eliminated — no bonus
-  'Uzbekistan':0,'Haiti':0,'Tunisia':0,'Panama':0,
-  'Turkey':0,'Scotland':0,'Iran':0,'South Korea':0,'Uruguay':0,'Australia':0,'Czechia':0
-};
+<div class="admin-modal" id="adminModal">
+  <div class="admin-box">
+    <span class="admin-close" onclick="closeAdmin()">×</span>
+    <div id="adminLoginView">
+      <h3>Admin Login</h3>
+      <input type="password" id="adminPassword" placeholder="Enter admin password">
+      <button class="admin-btn" onclick="checkPassword()">Unlock</button>
+      <div id="loginError" style="color:var(--red);font-size:.8rem;margin-top:8px;"></div>
+    </div>
+    <div id="adminEditView" class="hidden">
+      <h3>Edit Results</h3>
+      <button class="admin-btn" onclick="syncLiveScores()" id="syncBtn" style="margin-bottom:16px;">🔄 Sync Live Scores from ESPN</button>
+      <div id="syncStatus" style="font-size:.75rem;color:var(--text-dim);margin-bottom:12px;"></div>
+      <div id="adminTeamsList"></div>
+      <button class="admin-btn secondary" onclick="closeAdmin()" style="margin-top:16px;">Close</button>
+    </div>
+  </div>
+</div>
 
-// All group stage results from provided screenshots.
-// results: 3 group stage matches W/D/L
-// advanced: knockout rounds reached — R32 awarded to all 32 qualifiers
-// eliminated: did not qualify for R32
-const PLAYERS = [
-  { name:'Brett', teams:[
-    { name:'Norway',        results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { name:'Colombia',      results:['W','D','W'], advanced:['R32'], eliminated:false },
-    { name:'Bosnia & Herz.',results:['D','L','W'], advanced:['R32'], eliminated:false },
-    { name:'Egypt',         results:['D','W','D'], advanced:['R32'], eliminated:false },
-  ]},
-  { name:'Rami', teams:[
-    { name:'England',    results:['W','D','W'], advanced:['R32'], eliminated:false },
-    { name:'Mexico',     results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Senegal',    results:['L','L','W'], advanced:['R32'], eliminated:false },
-    { name:'Uzbekistan', results:['L','L','L'], advanced:[],      eliminated:true  },
-  ]},
-  { name:'Van', teams:[
-    { name:'Argentina', results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Japan',     results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { name:'Canada',    results:['D','W','L'], advanced:['R32'], eliminated:false },
-    { name:'Australia', results:['L','L','D'], advanced:[],      eliminated:true  },
-  ]},
-  { name:'Tyler', teams:[
-    { name:'France',  results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Austria', results:['W','L','D'], advanced:['R32'], eliminated:false },
-    { name:'Turkey',  results:['W','L','W'], advanced:[],      eliminated:true  },
-    { name:'Haiti',   results:['L','L','L'], advanced:[],      eliminated:true  },
-  ]},
-  { name:'Erich', teams:[
-    { name:'Spain',   results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Ecuador', results:['L','D','W'], advanced:['R32'], eliminated:false },
-    { name:'Sweden',  results:['W','L','D'], advanced:['R32'], eliminated:false },
-    { name:'Panama',  results:['D','L','L'], advanced:[],      eliminated:true  },
-  ]},
-  { name:'Burk', teams:[
-    { name:'Brazil',      results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Croatia',     results:['L','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Ivory Coast', results:['W','L','W'], advanced:['R32'], eliminated:false },
-    { name:'Cape Verde',  results:['D','D','D'], advanced:['R32'], eliminated:false },
-  ]},
-  { name:'Zack', teams:[
-    { name:'Portugal',    results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { name:'Switzerland', results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Scotland',    results:['W','L','L'], advanced:[],      eliminated:true  },
-    { name:'Tunisia',     results:['L','L','L'], advanced:[],      eliminated:true  },
-  ]},
-  { name:'JR', teams:[
-    { name:'Germany',  results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { name:'Morocco',  results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { name:'Paraguay', results:['L','W','D'], advanced:['R32'], eliminated:false },
-    { name:'Iran',     results:['D','D','D'], advanced:[],      eliminated:true  },
-  ]},
-  { name:'Kyle', teams:[
-    { name:'Netherlands', results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { name:'USA',         results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { name:'Algeria',     results:['L','W','D'], advanced:['R32'], eliminated:false },
-    { name:'Czechia',     results:['L','D','L'], advanced:[],      eliminated:true  },
-  ]},
-  { name:'Austin', teams:[
-    { name:'Belgium',     results:['D','D','W'], advanced:['R32'], eliminated:false },
-    { name:'Uruguay',     results:['D','D','L'], advanced:[],      eliminated:true  },
-    { name:'Ghana',       results:['W','D','L'], advanced:['R32'], eliminated:false },
-    { name:'South Korea', results:['W','L','L'], advanced:[],      eliminated:true  },
-  ]},
-];
+<!-- ============================================================ -->
+<!-- FIREBASE SETUP — paste your config values below              -->
+<!-- Get these from: Firebase Console → Project Settings → Your Apps -->
+<!-- ============================================================ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, doc, getDocs, setDoc, onSnapshot, writeBatch
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-function calcTeamPts(t) {
-  let pts = 0;
-  t.results.forEach(r => { if(r==='W') pts+=2; else if(r==='D') pts+=1; });
-  t.advanced.forEach(s => { pts += (ADV_PTS[s]||0); });
-  return pts;
-}
-function calcPlayerPts(p) { return p.teams.reduce((s,t)=>s+calcTeamPts(t),0); }
-function calcProjected(p) {
-  return calcPlayerPts(p) + p.teams.reduce((s,t)=>s+(PROJ_BONUS[t.name]||0),0);
-}
-function getSorted() { return [...PLAYERS].sort((a,b)=>calcPlayerPts(b)-calcPlayerPts(a)); }
+  // ▼▼▼ PASTE YOUR FIREBASE CONFIG HERE ▼▼▼
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  // ▲▲▲ PASTE YOUR FIREBASE CONFIG ABOVE ▲▲▲
 
-let openBreakdown = null;
-function toggleBreakdown(name) { openBreakdown = openBreakdown===name?null:name; render(); }
+  // ▼▼▼ SET YOUR OWN ADMIN PASSWORD HERE ▼▼▼
+  const ADMIN_PASSWORD = "changeme123";
+  // ▲▲▲ CHANGE THIS BEFORE PUBLISHING ▲▲▲
 
-function render() {
-  const sorted = getSorted();
-  const container = document.getElementById('leaderboard');
-  container.innerHTML = '';
-  sorted.forEach((player, i) => {
-    const rank = i+1, pts = calcPlayerPts(player), proj = calcProjected(player);
-    const isOpen = openBreakdown === player.name;
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const teamsCollection = collection(db, "teams");
 
-    const card = document.createElement('div');
-    card.className = `leader-card rank-${rank<=3?rank:'other'}`;
-    card.onclick = () => toggleBreakdown(player.name);
+  // Default seed data — only written if the database is empty on first load
+  const SEED_DATA = [
+    { id:'norway',     player:'Brett',  name:'Norway',         results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { id:'colombia',   player:'Brett',  name:'Colombia',       results:['W','D','W'], advanced:['R32'], eliminated:false },
+    { id:'bosnia',     player:'Brett',  name:'Bosnia & Herz.', results:['D','L','W'], advanced:['R32'], eliminated:false },
+    { id:'egypt',      player:'Brett',  name:'Egypt',          results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { id:'england',    player:'Rami',   name:'England',        results:['W','D','W'], advanced:['R32'], eliminated:false },
+    { id:'mexico',     player:'Rami',   name:'Mexico',         results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'senegal',    player:'Rami',   name:'Senegal',        results:['L','L','W'], advanced:['R32'], eliminated:false },
+    { id:'uzbekistan', player:'Rami',   name:'Uzbekistan',     results:['L','L','L'], advanced:[],      eliminated:true  },
+    { id:'argentina',  player:'Van',    name:'Argentina',      results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'japan',      player:'Van',    name:'Japan',          results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { id:'canada',     player:'Van',    name:'Canada',         results:['D','W','L'], advanced:['R32'], eliminated:false },
+    { id:'australia',  player:'Van',    name:'Australia',      results:['L','L','D'], advanced:[],      eliminated:true  },
+    { id:'france',     player:'Tyler',  name:'France',         results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'austria',    player:'Tyler',  name:'Austria',        results:['W','L','D'], advanced:['R32'], eliminated:false },
+    { id:'turkey',     player:'Tyler',  name:'Turkey',         results:['W','L','W'], advanced:[],      eliminated:true  },
+    { id:'haiti',      player:'Tyler',  name:'Haiti',          results:['L','L','L'], advanced:[],      eliminated:true  },
+    { id:'spain',      player:'Erich',  name:'Spain',          results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'ecuador',    player:'Erich',  name:'Ecuador',        results:['L','D','W'], advanced:['R32'], eliminated:false },
+    { id:'sweden',     player:'Erich',  name:'Sweden',         results:['W','L','D'], advanced:['R32'], eliminated:false },
+    { id:'panama',     player:'Erich',  name:'Panama',         results:['D','L','L'], advanced:[],      eliminated:true  },
+    { id:'brazil',     player:'Burk',   name:'Brazil',         results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'croatia',    player:'Burk',   name:'Croatia',        results:['L','W','W'], advanced:['R32'], eliminated:false },
+    { id:'ivorycoast', player:'Burk',   name:'Ivory Coast',    results:['W','L','W'], advanced:['R32'], eliminated:false },
+    { id:'capeverde',  player:'Burk',   name:'Cape Verde',     results:['D','D','D'], advanced:['R32'], eliminated:false },
+    { id:'portugal',   player:'Zack',   name:'Portugal',       results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { id:'switzerland',player:'Zack',   name:'Switzerland',    results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'scotland',   player:'Zack',   name:'Scotland',       results:['W','L','L'], advanced:[],      eliminated:true  },
+    { id:'tunisia',    player:'Zack',   name:'Tunisia',        results:['L','L','L'], advanced:[],      eliminated:true  },
+    { id:'germany',    player:'JR',     name:'Germany',        results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { id:'morocco',    player:'JR',     name:'Morocco',        results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'paraguay',   player:'JR',     name:'Paraguay',       results:['L','W','D'], advanced:['R32'], eliminated:false },
+    { id:'iran',       player:'JR',     name:'Iran',           results:['D','D','D'], advanced:[],      eliminated:true  },
+    { id:'netherlands',player:'Kyle',   name:'Netherlands',    results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'usa',        player:'Kyle',   name:'USA',            results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { id:'algeria',    player:'Kyle',   name:'Algeria',        results:['L','W','D'], advanced:['R32'], eliminated:false },
+    { id:'czechia',    player:'Kyle',   name:'Czechia',        results:['L','D','L'], advanced:[],      eliminated:true  },
+    { id:'belgium',    player:'Austin', name:'Belgium',        results:['D','D','W'], advanced:['R32'], eliminated:false },
+    { id:'uruguay',    player:'Austin', name:'Uruguay',        results:['D','D','L'], advanced:[],      eliminated:true  },
+    { id:'ghana',      player:'Austin', name:'Ghana',          results:['W','D','L'], advanced:['R32'], eliminated:false },
+    { id:'southkorea', player:'Austin', name:'South Korea',    results:['W','L','L'], advanced:[],      eliminated:true  },
+  ];
 
-    const pills = player.teams.map(t =>
-      `<span class="team-pill ${t.eliminated?'eliminated':'alive'}">${FLAGS[t.name]||''} ${t.name}</span>`
-    ).join('');
+  const FLAGS = {
+    'Brazil':'🇧🇷','Croatia':'🇭🇷','Ivory Coast':'🇨🇮','Cape Verde':'🇨🇻',
+    'England':'🏴','Mexico':'🇲🇽','Senegal':'🇸🇳','Uzbekistan':'🇺🇿',
+    'Norway':'🇳🇴','Colombia':'🇨🇴','Bosnia & Herz.':'🇧🇦','Egypt':'🇪🇬',
+    'Netherlands':'🇳🇱','USA':'🇺🇸','Algeria':'🇩🇿','Czechia':'🇨🇿',
+    'Spain':'🇪🇸','Ecuador':'🇪🇨','Sweden':'🇸🇪','Panama':'🇵🇦',
+    'Germany':'🇩🇪','Morocco':'🇲🇦','Paraguay':'🇵🇾','Iran':'🇮🇷',
+    'Argentina':'🇦🇷','Japan':'🇯🇵','Canada':'🇨🇦','Australia':'🇦🇺',
+    'France':'🇫🇷','Austria':'🇦🇹','Turkey':'🇹🇷','Haiti':'🇭🇹',
+    'Portugal':'🇵🇹','Switzerland':'🇨🇭','Scotland':'🏴','Tunisia':'🇹🇳',
+    'Belgium':'🇧🇪','Uruguay':'🇺🇾','Ghana':'🇬🇭','South Korea':'🇰🇷'
+  };
+  const TAGLINES = {
+    'Burk':'Blood. Sweat. Brasil.','Rami':'Clinical. Composed. Champion.',
+    'Brett':'Cold Weather. Hot Takes.','Kyle':'Total Football. Total Chaos.',
+    'Tyler':'Ice in Veins.','Erich':'The Professor.',
+    'JR':'Press. Attack. Repeat.','Van':'Adventure Mode: ON.',
+    'Zack':'Play Fast. Win Big.','Austin':'Built Different.'
+  };
+  const ADV_PTS    = {R32:3,R16:4,QF:5,SF:6,F:7,W:8};
+  const ADV_LABELS = {R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'Final',W:'Champ'};
+  const PROJ_BONUS = {
+    'France':33,'Argentina':33,'Spain':28,'Brazil':28,
+    'England':21,'Portugal':21,'Netherlands':18,'Germany':18,
+    'Mexico':18,'Colombia':14,'Norway':14,'Morocco':14,
+    'Switzerland':14,'Japan':14,'Belgium':10,'Egypt':10,
+    'Croatia':7,'Ivory Coast':7,'Ecuador':7,'Sweden':7,
+    'Canada':7,'Austria':7,'Paraguay':7,'Bosnia & Herz.':7,
+    'Algeria':7,'Ghana':7,'Senegal':7,'Cape Verde':7,
+  };
 
-    card.innerHTML = `
-      <div class="rank-num">${rank}</div>
-      <div class="player-info">
-        <div class="player-name">${player.name}</div>
-        <div class="player-tagline">${TAGLINES[player.name]||''}</div>
-      </div>
-      <div class="teams-row">${pills}</div>
-      <div class="score-block">
-        <div class="score-pts">${pts}</div>
-        <div class="score-label">pts</div>
-        <div class="score-proj">proj ${proj}</div>
-      </div>`;
-    container.appendChild(card);
+  let teamsData = [];
+  let isAdmin = false;
+  let openBreakdown = null;
 
-    const panel = document.createElement('div');
-    panel.className = `breakdown-panel ${isOpen?'open':''}`;
-    const teamsHTML = player.teams.map(t => {
-      const tPts = calcTeamPts(t);
-      const resHTML = t.results.map(r=>`<span class="result-badge ${r}">${r}</span>`).join('');
-      const advHTML = t.advanced.map(a=>`<span class="result-badge adv">${ADV_LABELS[a]}</span>`).join('');
-      const elimBadge = t.eliminated ? `<span class="result-badge elim">OUT</span>` : '';
-      return `<div class="breakdown-team" style="${t.eliminated?'opacity:.5':''}">
-        <div class="breakdown-team-name">${FLAGS[t.name]||''} ${t.name}</div>
-        <div class="match-results">${resHTML}${advHTML}${elimBadge}</div>
-        <div class="team-pts">${tPts}</div>
-      </div>`;
-    }).join('');
-    panel.innerHTML = `<div class="breakdown-title">Team Breakdown — click to collapse</div><div class="breakdown-teams">${teamsHTML}</div>`;
-    container.appendChild(panel);
-  });
-}
+  // Seed the database if it's empty (first run only)
+  async function seedIfEmpty() {
+    const snap = await getDocs(teamsCollection);
+    if (snap.empty) {
+      const batch = writeBatch(db);
+      SEED_DATA.forEach(t => {
+        batch.set(doc(db, "teams", t.id), {
+          player: t.player, name: t.name, results: t.results,
+          advanced: t.advanced, eliminated: t.eliminated
+        });
+      });
+      await batch.commit();
+      console.log("Seeded initial data");
+    }
+  }
 
-function showTab(tab, e) {
-  document.getElementById('tab-leaderboard').classList.toggle('hidden', tab!=='leaderboard');
-  document.getElementById('tab-scoring').classList.toggle('hidden', tab!=='scoring');
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(e&&e.target) e.target.classList.add('active');
-}
+  function calcTeamPts(t) {
+    let pts = 0;
+    t.results.forEach(r => { if (r === 'W') pts += 2; else if (r === 'D') pts += 1; });
+    t.advanced.forEach(s => { pts += (ADV_PTS[s] || 0); });
+    return pts;
+  }
 
-render();
-document.getElementById('lastUpdated').textContent = 'Updated Jun 28, 2026 · Group Stage Final';
+  function groupByPlayer() {
+    const map = {};
+    teamsData.forEach(t => {
+      if (!map[t.player]) map[t.player] = [];
+      map[t.player].push(t);
+    });
+    return Object.entries(map).map(([name, teams]) => ({ name, teams }));
+  }
+
+  function calcPlayerPts(p) { return p.teams.reduce((s, t) => s + calcTeamPts(t), 0); }
+  function calcProjected(p) { return calcPlayerPts(p) + p.teams.reduce((s, t) => s + (PROJ_BONUS[t.name] || 0), 0); }
+
+  window.toggleBreakdown = function(name) {
+    openBreakdown = openBreakdown === name ? null : name;
+    render();
+  };
+
+  function render() {
+    const players = groupByPlayer().sort((a, b) => calcPlayerPts(b) - calcPlayerPts(a));
+    const container = document.getElementById('leaderboard');
+    container.innerHTML = '';
+
+    players.forEach((player, i) => {
+      const rank = i + 1, pts = calcPlayerPts(player), proj = calcProjected(player);
+      const isOpen = openBreakdown === player.name;
+
+      const card = document.createElement('div');
+      card.className = `leader-card rank-${rank <= 3 ? rank : 'other'}`;
+      card.onclick = () => window.toggleBreakdown(player.name);
+
+      const pills = player.teams.map(t =>
+        `<span class="team-pill ${t.eliminated ? 'eliminated' : 'alive'}">${FLAGS[t.name] || ''} ${t.name}</span>`
+      ).join('');
+
+      card.innerHTML = `
+        <div class="rank-num">${rank}</div>
+        <div class="player-info">
+          <div class="player-name">${player.name}</div>
+          <div class="player-tagline">${TAGLINES[player.name] || ''}</div>
+        </div>
+        <div class="teams-row">${pills}</div>
+        <div class="score-block">
+          <div class="score-pts">${pts}</div>
+          <div class="score-label">pts</div>
+          <div class="score-proj">proj ${proj}</div>
+        </div>`;
+      container.appendChild(card);
+
+      const panel = document.createElement('div');
+      panel.className = `breakdown-panel ${isOpen ? 'open' : ''}`;
+      const teamsHTML = player.teams.map(t => {
+        const tPts = calcTeamPts(t);
+        const resHTML = t.results.map(r => `<span class="result-badge ${r}">${r}</span>`).join('');
+        const advHTML = t.advanced.map(a => `<span class="result-badge adv">${ADV_LABELS[a]}</span>`).join('');
+        const elimBadge = t.eliminated ? `<span class="result-badge elim">OUT</span>` : '';
+        return `<div class="breakdown-team" style="${t.eliminated ? 'opacity:.5' : ''}">
+          <div class="breakdown-team-name">${FLAGS[t.name] || ''} ${t.name}</div>
+          <div class="match-results">${resHTML}${advHTML}${elimBadge}</div>
+          <div class="team-pts">${tPts}</div>
+        </div>`;
+      }).join('');
+      panel.innerHTML = `<div class="breakdown-title">Team Breakdown — click to collapse</div><div class="breakdown-teams">${teamsHTML}</div>`;
+      container.appendChild(panel);
+    });
+  }
+
+  // Real-time listener — any change in Firestore instantly re-renders for everyone
+  function startListening() {
+    onSnapshot(teamsCollection, (snapshot) => {
+      teamsData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      render();
+      document.getElementById('lastUpdated').textContent = 'Live · Updated ' + new Date().toLocaleString();
+      document.getElementById('connDot').classList.remove('offline');
+      document.getElementById('connText').textContent = 'Connected · Live updates active';
+    }, (err) => {
+      console.error(err);
+      document.getElementById('connDot').classList.add('offline');
+      document.getElementById('connText').textContent = 'Connection error — check Firebase config';
+    });
+  }
+
+  async function init() {
+    try {
+      await seedIfEmpty();
+      startListening();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('connDot').classList.add('offline');
+      document.getElementById('connText').textContent = 'Connection failed — check your Firebase config values';
+      document.getElementById('lastUpdated').textContent = 'Offline';
+    }
+  }
+
+  window.showTab = function(tab, e) {
+    document.getElementById('tab-leaderboard').classList.toggle('hidden', tab !== 'leaderboard');
+    document.getElementById('tab-scoring').classList.toggle('hidden', tab !== 'scoring');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (e && e.target) e.target.classList.add('active');
+  };
+
+  window.openAdmin = function() {
+    document.getElementById('adminModal').classList.add('open');
+    if (isAdmin) showAdminEdit();
+  };
+  window.closeAdmin = function() {
+    document.getElementById('adminModal').classList.remove('open');
+  };
+  window.checkPassword = function() {
+    const val = document.getElementById('adminPassword').value;
+    if (val === ADMIN_PASSWORD) {
+      isAdmin = true;
+      showAdminEdit();
+    } else {
+      document.getElementById('loginError').textContent = 'Incorrect password';
+    }
+  };
+
+  function showAdminEdit() {
+    document.getElementById('adminLoginView').classList.add('hidden');
+    document.getElementById('adminEditView').classList.remove('hidden');
+    renderAdminList();
+  }
+
+  function renderAdminList() {
+    const list = document.getElementById('adminTeamsList');
+    list.innerHTML = '';
+    teamsData.sort((a,b) => a.player.localeCompare(b.player)).forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'admin-row';
+      const resultSelects = [0,1,2].map(i =>
+        `<select onchange="updateResult('${t.id}',${i},this.value)">
+          ${['?','W','D','L'].map(v => `<option value="${v}" ${t.results[i]===v?'selected':''}>${v}</option>`).join('')}
+        </select>`
+      ).join('');
+      row.innerHTML = `
+        <span>${t.player} — ${t.name}</span>
+        ${resultSelects}
+        <label style="font-size:.7rem;display:flex;align-items:center;gap:4px;">
+          <input type="checkbox" ${t.eliminated?'checked':''} onchange="updateEliminated('${t.id}',this.checked)"> OUT
+        </label>`;
+      list.appendChild(row);
+    });
+  }
+
+  window.updateResult = async function(teamId, index, value) {
+    const team = teamsData.find(t => t.id === teamId);
+    if (!team) return;
+    const newResults = [...team.results];
+    newResults[index] = value;
+    await setDoc(doc(db, "teams", teamId), { ...team, results: newResults }, { merge: true });
+  };
+
+  window.updateEliminated = async function(teamId, checked) {
+    await setDoc(doc(db, "teams", teamId), { eliminated: checked }, { merge: true });
+  };
+
+  // Calls your Vercel serverless function, which fetches ESPN and writes
+  // updated results into Firestore. The onSnapshot listener above will
+  // automatically pick up the changes and re-render — no manual refresh needed.
+  window.syncLiveScores = async function() {
+    const btn = document.getElementById('syncBtn');
+    const status = document.getElementById('syncStatus');
+    btn.disabled = true;
+    btn.textContent = '🔄 Syncing...';
+    status.textContent = '';
+    try {
+      const res = await fetch('/api/sync-scores', { method: 'POST' });
+      const result = await res.json();
+      if (result.success) {
+        status.textContent = `✅ Synced ${result.matchesProcessed} matches, updated ${result.teamsUpdated} teams.`;
+        status.style.color = 'var(--green)';
+      } else {
+        status.textContent = `⚠️ ${result.error || 'Sync failed'}`;
+        status.style.color = 'var(--red)';
+      }
+    } catch (e) {
+      status.textContent = `⚠️ Could not reach sync endpoint: ${e.message}`;
+      status.style.color = 'var(--red)';
+    }
+    btn.disabled = false;
+    btn.textContent = '🔄 Sync Live Scores from ESPN';
+  };
+
+  init();
 </script>
 </body>
 </html>
