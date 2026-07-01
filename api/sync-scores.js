@@ -71,6 +71,12 @@ export default async function handler(req, res) {
 
     let matchesProcessed = 0;
 
+    // Track which teams lost in a knockout round (any match after group stage)
+    const knockoutEliminated = new Set();
+
+    // ESPN calendar slugs for knockout rounds
+    const KNOCKOUT_SLUGS = ['round-of-32', 'round-of-16', 'quarterfinals', 'semifinals', 'third-place', 'final'];
+
     for (const event of events) {
       const comp = event.competitions?.[0];
       if (!comp) continue;
@@ -90,13 +96,27 @@ export default async function handler(req, res) {
       const bTracked = TRACKED_TEAMS.includes(nameB);
       if (!aTracked && !bTracked) continue;
 
+      // Detect if this is a knockout round match
+      const slug = event.season?.slug || '';
+      const isKnockout = KNOCKOUT_SLUGS.some(s => slug.includes(s));
+
       let resultA, resultB;
       if (scoreA > scoreB) { resultA = 'W'; resultB = 'L'; }
       else if (scoreA < scoreB) { resultA = 'L'; resultB = 'W'; }
       else { resultA = 'D'; resultB = 'D'; }
 
-      if (aTracked) teamResults[nameA].push(resultA);
-      if (bTracked) teamResults[nameB].push(resultB);
+      // Only push group stage results into the results array
+      if (!isKnockout) {
+        if (aTracked) teamResults[nameA].push(resultA);
+        if (bTracked) teamResults[nameB].push(resultB);
+      }
+
+      // Any knockout loss = eliminated
+      if (isKnockout) {
+        if (aTracked && resultA === 'L') knockoutEliminated.add(nameA);
+        if (bTracked && resultB === 'L') knockoutEliminated.add(nameB);
+      }
+
       matchesProcessed++;
     }
 
@@ -108,16 +128,25 @@ export default async function handler(req, res) {
     teamsSnap.forEach(docSnap => {
       const team = docSnap.data();
       const espnResults = teamResults[team.name];
+      const updates = {};
+
       if (espnResults && espnResults.length > 0) {
-        // Only overwrite if ESPN shows more completed matches than we currently have
         const currentCompleted = team.results.filter(r => r !== '?').length;
         if (espnResults.length >= currentCompleted) {
-          // Pad to 3 results, preserving '?' for unplayed matches
           const padded = [...espnResults];
           while (padded.length < 3) padded.push('?');
-          batch.update(docSnap.ref, { results: padded });
-          teamsUpdated++;
+          updates.results = padded;
         }
+      }
+
+      // Mark eliminated if they lost a knockout match, but never un-eliminate
+      if (knockoutEliminated.has(team.name) && !team.eliminated) {
+        updates.eliminated = true;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        batch.update(docSnap.ref, updates);
+        teamsUpdated++;
       }
     });
 
@@ -134,4 +163,5 @@ export default async function handler(req, res) {
     console.error('Sync error:', err);
     return res.status(500).json({ error: err.message });
   }
+}
 }
