@@ -333,9 +333,6 @@
     return Object.entries(map).map(([name, teams]) => ({ name, teams }));
   }
 
-  function calcPlayerPts(p) { return p.teams.reduce((s, t) => s + calcTeamPts(t), 0); }
-  function calcProjected(p) { return calcPlayerPts(p) + p.teams.reduce((s, t) => s + (PROJ_BONUS[t.name] || 0), 0); }
-
   window.toggleBreakdown = function(name) {
     openBreakdown = openBreakdown === name ? null : name;
     render();
