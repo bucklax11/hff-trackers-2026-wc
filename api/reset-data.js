@@ -70,7 +70,7 @@ module.exports = async function handler(req, res) {
     // Reseed with clean data
     const seedBatch = db.batch();
     SEED_DATA.forEach(t => {
-      seedBatch.set(doc(db, 'teams', t.id), {
+      seedBatch.set(db.collection('teams').doc(t.id), {
         player: t.player,
         name: t.name,
         results: t.results,
