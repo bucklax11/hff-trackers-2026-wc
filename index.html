@@ -148,8 +148,9 @@
     </div>
     <div id="adminEditView" class="hidden">
       <h3>Edit Results</h3>
-      <button class="admin-btn" onclick="syncLiveScores()" id="syncBtn" style="margin-bottom:16px;">🔄 Sync Live Scores from ESPN</button>
-      <div id="syncStatus" style="font-size:.75rem;color:var(--text-dim);margin-bottom:12px;"></div>
+      <button class="admin-btn" onclick="syncLiveScores()" id="syncBtn" style="margin-bottom:8px;">🔄 Sync Live Scores from ESPN</button>
+<button class="admin-btn secondary" onclick="resetData()" id="resetBtn" style="margin-bottom:16px;">⚠️ Reset All Data to Seed</button>
+<div id="syncStatus" style="font-size:.75rem;color:var(--text-dim);margin-bottom:12px;"></div>
       <div id="adminTeamsList"></div>
       <button class="admin-btn secondary" onclick="closeAdmin()" style="margin-top:16px;">Close</button>
     </div>
@@ -446,6 +447,30 @@
   // Calls your Vercel serverless function, which fetches ESPN and writes
   // updated results into Firestore. The onSnapshot listener above will
   // automatically pick up the changes and re-render — no manual refresh needed.
+  window.resetData = async function() {
+    if (!confirm('This will wipe all Firestore data and reseed from scratch. Are you sure?')) return;
+    const btn = document.getElementById('resetBtn');
+    const status = document.getElementById('syncStatus');
+    btn.disabled = true;
+    btn.textContent = '⚠️ Resetting...';
+    status.textContent = '';
+    try {
+      const res = await fetch('/api/reset-data', { method: 'POST' });
+      const result = await res.json();
+      if (result.success) {
+        status.textContent = `✅ ${result.message}`;
+        status.style.color = 'var(--green)';
+      } else {
+        status.textContent = `⚠️ ${result.error || 'Reset failed'}`;
+        status.style.color = 'var(--red)';
+      }
+    } catch (e) {
+      status.textContent = `⚠️ Could not reach reset endpoint: ${e.message}`;
+      status.style.color = 'var(--red)';
+    }
+    btn.disabled = false;
+    btn.textContent = '⚠️ Reset All Data to Seed';
+  };
   window.syncLiveScores = async function() {
     const btn = document.getElementById('syncBtn');
     const status = document.getElementById('syncStatus');
