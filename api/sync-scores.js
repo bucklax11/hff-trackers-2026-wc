@@ -69,6 +69,8 @@ module.exports = async function handler(req, res) {
     const knockoutEliminated = new Set();
     let matchesProcessed = 0;
 
+    const debugLog = [];
+
     for (const event of events) {
       const comp = event.competitions?.[0];
       if (!comp) continue;
@@ -88,8 +90,17 @@ module.exports = async function handler(req, res) {
       const bTracked = TRACKED_TEAMS.includes(nameB);
       if (!aTracked && !bTracked) continue;
 
-      // Log every match involving a tracked team so we can debug
-      console.log(`MATCH: ${nameA} vs ${nameB} | ${scoreA}-${scoreB} | date: ${event.date} | slug: ${event.season?.slug || event.slug || 'none'} | resultsA so far: ${teamResults[nameA]?.length} | resultsB so far: ${teamResults[nameB]?.length}`);
+      debugLog.push({
+        match: `${nameA} vs ${nameB}`,
+        score: `${scoreA}-${scoreB}`,
+        date: event.date,
+        slug: event.season?.slug || event.slug || 'none',
+        knockoutBySlug: isKnockoutBySlug,
+        knockoutByCount: isKnockoutByCount,
+        isKnockout,
+        resultsABefore: teamResults[nameA]?.length,
+        resultsBBefore: teamResults[nameB]?.length,
+      });
 
       // Use both slug AND result count to detect knockout rounds.
       // Group stage = max 3 matches per team. Anything beyond 3 is knockout.
@@ -153,6 +164,7 @@ module.exports = async function handler(req, res) {
       matchesProcessed,
       teamsUpdated,
       timestamp: new Date().toISOString(),
+      debug: debugLog.filter(d => d.match.includes('Brazil')),
     });
 
   } catch (err) {
