@@ -19,9 +19,14 @@ const NAME_MAP = {
   "Côte d'Ivoire": 'Ivory Coast',
   'Ivory Coast': 'Ivory Coast',
   'Bosnia and Herzegovina': 'Bosnia & Herz.',
+  'Bosnia & Herzegovina': 'Bosnia & Herz.',
+  'Bosnia-Herzegovina': 'Bosnia & Herz.',
+  'Bosnia': 'Bosnia & Herz.',
   'DR Congo': 'DR Congo',
+  'Congo DR': 'DR Congo',
   'Czech Republic': 'Czechia',
   'Cabo Verde': 'Cape Verde',
+  'Cape Verde': 'Cape Verde',
 };
 
 function normalizeName(espnName) {
