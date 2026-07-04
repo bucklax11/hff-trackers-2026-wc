@@ -1,16 +1,9 @@
 // api/sync-scores.js
 // Vercel Serverless Function — fetches live World Cup scores from ESPN
 // and writes win/draw/loss results into Firestore.
-//
-// SETUP REQUIRED:
-// 1. npm install firebase-admin  (add to package.json)
-// 2. In Vercel dashboard → Settings → Environment Variables, add:
-//      FIREBASE_SERVICE_ACCOUNT  =  (paste the entire contents of your
-//      downloaded service account JSON file as one line)
 
 const admin = require('firebase-admin');
 
-// Initialize Firebase Admin SDK once (reused across warm invocations)
 if (!admin.apps.length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   admin.initializeApp({
@@ -59,9 +52,9 @@ module.exports = async function handler(req, res) {
     }
 
     const data = await espnRes.json();
-    const events = (data.events || []).sort((a, b) => {
-      return new Date(a.date) - new Date(b.date);
-    });
+
+    // Sort events by date so group stage matches are always processed before knockout matches
+    const events = (data.events || []).sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const teamResults = {};
     TRACKED_TEAMS.forEach(t => { teamResults[t] = []; });
@@ -69,13 +62,10 @@ module.exports = async function handler(req, res) {
     const knockoutEliminated = new Set();
     let matchesProcessed = 0;
 
-    const debugLog = [];
-
     for (const event of events) {
       const comp = event.competitions?.[0];
       if (!comp) continue;
-      const completed = comp.status?.type?.completed;
-      if (!completed) continue;
+      if (!comp.status?.type?.completed) continue;
 
       const competitors = comp.competitors || [];
       if (competitors.length !== 2) continue;
@@ -95,25 +85,11 @@ module.exports = async function handler(req, res) {
       const isKnockoutByCount = teamResults[nameA]?.length >= 3 || teamResults[nameB]?.length >= 3;
       const isKnockout = isKnockoutBySlug || isKnockoutByCount;
 
-      debugLog.push({
-        match: `${nameA} vs ${nameB}`,
-        score: `${scoreA}-${scoreB}`,
-        date: event.date,
-        slug,
-        isKnockoutBySlug,
-        isKnockoutByCount,
-        isKnockout,
-        resultsABefore: teamResults[nameA]?.length,
-        resultsBBefore: teamResults[nameB]?.length,
-      });
-
       let resultA, resultB;
       if (scoreA > scoreB)      { resultA = 'W'; resultB = 'L'; }
       else if (scoreA < scoreB) { resultA = 'L'; resultB = 'W'; }
       else                      { resultA = 'D'; resultB = 'D'; }
 
-      // Only add to group stage results if not a knockout match
-      // and team hasn't already accumulated 3 group results
       if (!isKnockout) {
         if (aTracked && teamResults[nameA].length < 3) teamResults[nameA].push(resultA);
         if (bTracked && teamResults[nameB].length < 3) teamResults[nameB].push(resultB);
@@ -159,7 +135,6 @@ module.exports = async function handler(req, res) {
       matchesProcessed,
       teamsUpdated,
       timestamp: new Date().toISOString(),
-      debug: debugLog.filter(d => d.match.includes('Brazil')),
     });
 
   } catch (err) {
