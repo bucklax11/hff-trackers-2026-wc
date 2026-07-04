@@ -137,12 +137,9 @@ module.exports = async function handler(req, res) {
       const updates = {};
 
       if (espnResults && espnResults.length > 0) {
-        const currentCompleted = team.results.filter(r => r !== '?').length;
-        if (espnResults.length >= currentCompleted) {
-          const padded = [...espnResults];
-          while (padded.length < 3) padded.push('?');
-          updates.results = padded;
-        }
+        const padded = [...espnResults];
+        while (padded.length < 3) padded.push('?');
+        updates.results = padded;
       }
 
       if (knockoutEliminated.has(team.name) && !team.eliminated) {
