@@ -90,24 +90,22 @@ module.exports = async function handler(req, res) {
       const bTracked = TRACKED_TEAMS.includes(nameB);
       if (!aTracked && !bTracked) continue;
 
-      debugLog.push({
-        match: `${nameA} vs ${nameB}`,
-        score: `${scoreA}-${scoreB}`,
-        date: event.date,
-        slug: event.season?.slug || event.slug || 'none',
-        knockoutBySlug: isKnockoutBySlug,
-        knockoutByCount: isKnockoutByCount,
-        isKnockout,
-        resultsABefore: teamResults[nameA]?.length,
-        resultsBBefore: teamResults[nameB]?.length,
-      });
-
-      // Use both slug AND result count to detect knockout rounds.
-      // Group stage = max 3 matches per team. Anything beyond 3 is knockout.
       const slug = event.season?.slug || event.slug || event.type?.slug || '';
       const isKnockoutBySlug = KNOCKOUT_SLUGS.some(s => slug.includes(s));
       const isKnockoutByCount = teamResults[nameA]?.length >= 3 || teamResults[nameB]?.length >= 3;
       const isKnockout = isKnockoutBySlug || isKnockoutByCount;
+
+      debugLog.push({
+        match: `${nameA} vs ${nameB}`,
+        score: `${scoreA}-${scoreB}`,
+        date: event.date,
+        slug,
+        isKnockoutBySlug,
+        isKnockoutByCount,
+        isKnockout,
+        resultsABefore: teamResults[nameA]?.length,
+        resultsBBefore: teamResults[nameB]?.length,
+      });
 
       let resultA, resultB;
       if (scoreA > scoreB)      { resultA = 'W'; resultB = 'L'; }
