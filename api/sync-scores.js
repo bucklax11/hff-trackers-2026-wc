@@ -88,6 +88,9 @@ module.exports = async function handler(req, res) {
       const bTracked = TRACKED_TEAMS.includes(nameB);
       if (!aTracked && !bTracked) continue;
 
+      // Log every match involving a tracked team so we can debug
+      console.log(`MATCH: ${nameA} vs ${nameB} | ${scoreA}-${scoreB} | date: ${event.date} | slug: ${event.season?.slug || event.slug || 'none'} | resultsA so far: ${teamResults[nameA]?.length} | resultsB so far: ${teamResults[nameB]?.length}`);
+
       // Use both slug AND result count to detect knockout rounds.
       // Group stage = max 3 matches per team. Anything beyond 3 is knockout.
       const slug = event.season?.slug || event.slug || event.type?.slug || '';
