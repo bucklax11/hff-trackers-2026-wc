@@ -482,7 +482,6 @@
       const result = await res.json();
       if (result.success) {
         status.textContent = `✅ Synced ${result.matchesProcessed} matches, updated ${result.teamsUpdated} teams.`;
-status.innerHTML += `<pre style="margin-top:8px;font-size:.65rem;color:var(--text-dim);white-space:pre-wrap;">${JSON.stringify(result.debug, null, 2)}</pre>`;
         status.style.color = 'var(--green)';
       } else {
         status.textContent = `⚠️ ${result.error || 'Sync failed'}`;
