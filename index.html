@@ -149,8 +149,8 @@
     <div id="adminEditView" class="hidden">
       <h3>Edit Results</h3>
       <button class="admin-btn" onclick="syncLiveScores()" id="syncBtn" style="margin-bottom:8px;">🔄 Sync Live Scores from ESPN</button>
-<button class="admin-btn secondary" onclick="resetData()" id="resetBtn" style="margin-bottom:16px;">⚠️ Reset All Data to Seed</button>
-<div id="syncStatus" style="font-size:.75rem;color:var(--text-dim);margin-bottom:12px;"></div>
+      <button class="admin-btn secondary" onclick="resetData()" id="resetBtn" style="margin-bottom:16px;">⚠️ Reset All Data to Seed</button>
+      <div id="syncStatus" style="font-size:.75rem;color:var(--text-dim);margin-bottom:12px;"></div>
       <div id="adminTeamsList"></div>
       <button class="admin-btn secondary" onclick="closeAdmin()" style="margin-top:16px;">Close</button>
     </div>
@@ -168,18 +168,18 @@
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   // ▼▼▼ PASTE YOUR FIREBASE CONFIG HERE ▼▼▼
- const firebaseConfig = {
-  apiKey: "AIzaSyBYjYgJRr54_oVEW8pt3GXFNHU-pg5dSY4",
-  authDomain: "hff-tracker-wc2026.firebaseapp.com",
-  projectId: "hff-tracker-wc2026",
-  storageBucket: "hff-tracker-wc2026.firebasestorage.app",
-  messagingSenderId: "5623690016",
-  appId: "1:5623690016:web:e7c007f77134b05a561d45"
-};
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
   // ▲▲▲ PASTE YOUR FIREBASE CONFIG ABOVE ▲▲▲
 
   // ▼▼▼ SET YOUR OWN ADMIN PASSWORD HERE ▼▼▼
-  const ADMIN_PASSWORD = "aaronstewart";
+  const ADMIN_PASSWORD = "changeme123";
   // ▲▲▲ CHANGE THIS BEFORE PUBLISHING ▲▲▲
 
   const app = initializeApp(firebaseConfig);
@@ -251,15 +251,51 @@
   };
   const ADV_PTS    = {R32:3,R16:4,QF:5,SF:6,F:7,W:8};
   const ADV_LABELS = {R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'Final',W:'Champ'};
-  const PROJ_BONUS = {
-    'France':33,'Argentina':33,'Spain':28,'Brazil':28,
-    'England':21,'Portugal':21,'Netherlands':18,'Germany':18,
-    'Mexico':18,'Colombia':14,'Norway':14,'Morocco':14,
-    'Switzerland':14,'Japan':14,'Belgium':10,'Egypt':10,
-    'Croatia':7,'Ivory Coast':7,'Ecuador':7,'Sweden':7,
-    'Canada':7,'Austria':7,'Paraguay':7,'Bosnia & Herz.':7,
-    'Algeria':7,'Ghana':7,'Senegal':7,'Cape Verde':7,
+  // Projected bonus points based on current tournament state.
+  // Only alive teams get a bonus. Bonus = expected additional pts from remaining rounds.
+  // ADV pts: R16=4, QF=5, SF=6, F=7, W=8
+  // A team in R16 could still earn: QF(5)+SF(6)+F(7)+W(8) = 26 max additional
+  // We assign a realistic expected value based on team strength.
+
+  const TEAM_STRENGTH = {
+    // Tier 1 — genuine contenders (expected to reach SF+)
+    'France':4,'Argentina':4,'Spain':4,'Brazil':4,
+    // Tier 2 — strong QF contenders
+    'England':3,'Portugal':3,'Morocco':3,'Colombia':3,
+    'Norway':3,'Mexico':3,'Switzerland':3,
+    // Tier 3 — likely R16/QF exit
+    'Belgium':2,'Egypt':2,'Japan':2,'Canada':2,
+    'USA':2,'Paraguay':2,'Austria':2,'Senegal':2,
+    // Tier 4 — likely early exit
+    'Bosnia & Herz.':1,'Algeria':1,'Ghana':1,'Cape Verde':1,
+    'Ecuador':1,'Sweden':1,'Croatia':1,
   };
+
+  // Points available per round win from current position
+  const ROUND_PTS = { R16:4, QF:5, SF:6, F:7, W:8 };
+  const ROUND_ORDER = ['R16','QF','SF','F','W'];
+
+  function calcProjected(player) {
+    const current = calcPlayerPts(player);
+    let bonus = 0;
+    player.teams.forEach(t => {
+      if (t.eliminated) return;
+      const tier = TEAM_STRENGTH[t.name] || 1;
+      // Find which rounds are still ahead for this team
+      const lastAdv = t.advanced[t.advanced.length - 1];
+      const lastIdx = ROUND_ORDER.indexOf(lastAdv);
+      const remainingRounds = ROUND_ORDER.slice(lastIdx + 1);
+      // Expected rounds won = tier-based fraction of remaining rounds
+      const fractions = { 4: 0.7, 3: 0.5, 2: 0.3, 1: 0.15 };
+      const winProb = fractions[tier] || 0.15;
+      remainingRounds.forEach((round, i) => {
+        // Probability of reaching each successive round decreases
+        const prob = Math.pow(winProb, i + 1);
+        bonus += prob * ROUND_PTS[round];
+      });
+    });
+    return Math.round(current + bonus);
+  }
 
   let teamsData = [];
   let isAdmin = false;
@@ -332,7 +368,7 @@
         <div class="score-block">
           <div class="score-pts">${pts}</div>
           <div class="score-label">pts</div>
-          <div class="score-proj">proj ${proj}</div>
+          <div class="score-proj">proj ~${proj}</div>
         </div>`;
       container.appendChild(card);
 
@@ -471,7 +507,6 @@
     btn.disabled = false;
     btn.textContent = '⚠️ Reset All Data to Seed';
   };
-  window.syncLiveScores = async function() {
     const btn = document.getElementById('syncBtn');
     const status = document.getElementById('syncStatus');
     btn.disabled = true;
