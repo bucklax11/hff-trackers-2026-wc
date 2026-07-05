@@ -103,6 +103,7 @@
 <div class="status-bar">
   <div class="status-item"><div class="dot" id="connDot"></div><span id="connText">Connecting to Firebase...</span></div>
   <div class="status-item">🎯 W=2 · D=1 · R32=3 · R16=4 · QF=5 · SF=6 · F=7 · 🏆=8</div>
+  <div class="status-item" id="autoSyncStatus" style="display:none">🔄 <span id="autoSyncText">Auto-sync active</span></div>
 </div>
 
 <div class="tabs">
@@ -155,328 +156,388 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, doc, getDocs, setDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, getDocs, setDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBYjYgJRr54_oVEW8pt3GXFNHU-pg5dSY4",
-    authDomain: "hff-tracker-wc2026.firebaseapp.com",
-    projectId: "hff-tracker-wc2026",
-    storageBucket: "hff-tracker-wc2026.firebasestorage.app",
-    messagingSenderId: "5623690016",
-    appId: "1:5623690016:web:e7c007f77134b05a561d45"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBYjYgJRr54_oVEW8pt3GXFNHU-pg5dSY4",
+  authDomain: "hff-tracker-wc2026.firebaseapp.com",
+  projectId: "hff-tracker-wc2026",
+  storageBucket: "hff-tracker-wc2026.firebasestorage.app",
+  messagingSenderId: "5623690016",
+  appId: "1:5623690016:web:e7c007f77134b05a561d45"
+};
 
-  const ADMIN_PASSWORD = "aaronstewart";
+const ADMIN_PASSWORD = "aaronstewart";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const teamsCollection = collection(db, "teams");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const teamsCol = collection(db, "teams");
 
-  const SEED_DATA = [
-    { id:'norway',      player:'Brett',  name:'Norway',         results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { id:'colombia',    player:'Brett',  name:'Colombia',       results:['W','D','W'], advanced:['R32'], eliminated:false },
-    { id:'bosnia',      player:'Brett',  name:'Bosnia & Herz.', results:['D','L','W'], advanced:['R32'], eliminated:false },
-    { id:'egypt',       player:'Brett',  name:'Egypt',          results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { id:'england',     player:'Rami',   name:'England',        results:['W','D','W'], advanced:['R32'], eliminated:false },
-    { id:'mexico',      player:'Rami',   name:'Mexico',         results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'senegal',     player:'Rami',   name:'Senegal',        results:['L','L','W'], advanced:['R32'], eliminated:false },
-    { id:'uzbekistan',  player:'Rami',   name:'Uzbekistan',     results:['L','L','L'], advanced:[],      eliminated:true  },
-    { id:'argentina',   player:'Van',    name:'Argentina',      results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'japan',       player:'Van',    name:'Japan',          results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { id:'canada',      player:'Van',    name:'Canada',         results:['D','W','L'], advanced:['R32'], eliminated:false },
-    { id:'australia',   player:'Van',    name:'Australia',      results:['L','L','D'], advanced:[],      eliminated:true  },
-    { id:'france',      player:'Tyler',  name:'France',         results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'austria',     player:'Tyler',  name:'Austria',        results:['W','L','D'], advanced:['R32'], eliminated:false },
-    { id:'turkey',      player:'Tyler',  name:'Turkey',         results:['W','L','W'], advanced:[],      eliminated:true  },
-    { id:'haiti',       player:'Tyler',  name:'Haiti',          results:['L','L','L'], advanced:[],      eliminated:true  },
-    { id:'spain',       player:'Erich',  name:'Spain',          results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'ecuador',     player:'Erich',  name:'Ecuador',        results:['L','D','W'], advanced:['R32'], eliminated:false },
-    { id:'sweden',      player:'Erich',  name:'Sweden',         results:['W','L','D'], advanced:['R32'], eliminated:false },
-    { id:'panama',      player:'Erich',  name:'Panama',         results:['D','L','L'], advanced:[],      eliminated:true  },
-    { id:'brazil',      player:'Burk',   name:'Brazil',         results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'croatia',     player:'Burk',   name:'Croatia',        results:['L','W','W'], advanced:['R32'], eliminated:false },
-    { id:'ivorycoast',  player:'Burk',   name:'Ivory Coast',    results:['W','L','W'], advanced:['R32'], eliminated:false },
-    { id:'capeverde',   player:'Burk',   name:'Cape Verde',     results:['D','D','D'], advanced:['R32'], eliminated:false },
-    { id:'portugal',    player:'Zack',   name:'Portugal',       results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { id:'switzerland', player:'Zack',   name:'Switzerland',    results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'scotland',    player:'Zack',   name:'Scotland',       results:['W','L','L'], advanced:[],      eliminated:true  },
-    { id:'tunisia',     player:'Zack',   name:'Tunisia',        results:['L','L','L'], advanced:[],      eliminated:true  },
-    { id:'germany',     player:'JR',     name:'Germany',        results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { id:'morocco',     player:'JR',     name:'Morocco',        results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'paraguay',    player:'JR',     name:'Paraguay',       results:['L','W','D'], advanced:['R32'], eliminated:false },
-    { id:'iran',        player:'JR',     name:'Iran',           results:['D','D','D'], advanced:[],      eliminated:true  },
-    { id:'netherlands', player:'Kyle',   name:'Netherlands',    results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'usa',         player:'Kyle',   name:'USA',            results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { id:'algeria',     player:'Kyle',   name:'Algeria',        results:['L','W','D'], advanced:['R32'], eliminated:false },
-    { id:'czechia',     player:'Kyle',   name:'Czechia',        results:['L','D','L'], advanced:[],      eliminated:true  },
-    { id:'belgium',     player:'Austin', name:'Belgium',        results:['D','D','W'], advanced:['R32'], eliminated:false },
-    { id:'uruguay',     player:'Austin', name:'Uruguay',        results:['D','D','L'], advanced:[],      eliminated:true  },
-    { id:'ghana',       player:'Austin', name:'Ghana',          results:['W','D','L'], advanced:['R32'], eliminated:false },
-    { id:'southkorea',  player:'Austin', name:'South Korea',    results:['W','L','L'], advanced:[],      eliminated:true  },
-  ];
+const SEED_DATA = [
+  { id:'norway',      player:'Brett',  name:'Norway',         results:['W','W','L'], advanced:['R32'], eliminated:false },
+  { id:'colombia',    player:'Brett',  name:'Colombia',       results:['W','D','W'], advanced:['R32'], eliminated:false },
+  { id:'bosnia',      player:'Brett',  name:'Bosnia & Herz.', results:['D','L','W'], advanced:['R32'], eliminated:false },
+  { id:'egypt',       player:'Brett',  name:'Egypt',          results:['D','W','D'], advanced:['R32'], eliminated:false },
+  { id:'england',     player:'Rami',   name:'England',        results:['W','D','W'], advanced:['R32'], eliminated:false },
+  { id:'mexico',      player:'Rami',   name:'Mexico',         results:['W','W','W'], advanced:['R32'], eliminated:false },
+  { id:'senegal',     player:'Rami',   name:'Senegal',        results:['L','L','W'], advanced:['R32'], eliminated:false },
+  { id:'uzbekistan',  player:'Rami',   name:'Uzbekistan',     results:['L','L','L'], advanced:[],      eliminated:true  },
+  { id:'argentina',   player:'Van',    name:'Argentina',      results:['W','W','W'], advanced:['R32'], eliminated:false },
+  { id:'japan',       player:'Van',    name:'Japan',          results:['D','W','D'], advanced:['R32'], eliminated:false },
+  { id:'canada',      player:'Van',    name:'Canada',         results:['D','W','L'], advanced:['R32'], eliminated:false },
+  { id:'australia',   player:'Van',    name:'Australia',      results:['L','L','D'], advanced:[],      eliminated:true  },
+  { id:'france',      player:'Tyler',  name:'France',         results:['W','W','W'], advanced:['R32'], eliminated:false },
+  { id:'austria',     player:'Tyler',  name:'Austria',        results:['W','L','D'], advanced:['R32'], eliminated:false },
+  { id:'turkey',      player:'Tyler',  name:'Turkey',         results:['W','L','W'], advanced:[],      eliminated:true  },
+  { id:'haiti',       player:'Tyler',  name:'Haiti',          results:['L','L','L'], advanced:[],      eliminated:true  },
+  { id:'spain',       player:'Erich',  name:'Spain',          results:['D','W','W'], advanced:['R32'], eliminated:false },
+  { id:'ecuador',     player:'Erich',  name:'Ecuador',        results:['L','D','W'], advanced:['R32'], eliminated:false },
+  { id:'sweden',      player:'Erich',  name:'Sweden',         results:['W','L','D'], advanced:['R32'], eliminated:false },
+  { id:'panama',      player:'Erich',  name:'Panama',         results:['D','L','L'], advanced:[],      eliminated:true  },
+  { id:'brazil',      player:'Burk',   name:'Brazil',         results:['D','W','W'], advanced:['R32'], eliminated:false },
+  { id:'croatia',     player:'Burk',   name:'Croatia',        results:['L','W','W'], advanced:['R32'], eliminated:false },
+  { id:'ivorycoast',  player:'Burk',   name:'Ivory Coast',    results:['W','L','W'], advanced:['R32'], eliminated:false },
+  { id:'capeverde',   player:'Burk',   name:'Cape Verde',     results:['D','D','D'], advanced:['R32'], eliminated:false },
+  { id:'portugal',    player:'Zack',   name:'Portugal',       results:['D','W','D'], advanced:['R32'], eliminated:false },
+  { id:'switzerland', player:'Zack',   name:'Switzerland',    results:['W','W','W'], advanced:['R32'], eliminated:false },
+  { id:'scotland',    player:'Zack',   name:'Scotland',       results:['W','L','L'], advanced:[],      eliminated:true  },
+  { id:'tunisia',     player:'Zack',   name:'Tunisia',        results:['L','L','L'], advanced:[],      eliminated:true  },
+  { id:'germany',     player:'JR',     name:'Germany',        results:['W','W','L'], advanced:['R32'], eliminated:false },
+  { id:'morocco',     player:'JR',     name:'Morocco',        results:['D','W','W'], advanced:['R32'], eliminated:false },
+  { id:'paraguay',    player:'JR',     name:'Paraguay',       results:['L','W','D'], advanced:['R32'], eliminated:false },
+  { id:'iran',        player:'JR',     name:'Iran',           results:['D','D','D'], advanced:[],      eliminated:true  },
+  { id:'netherlands', player:'Kyle',   name:'Netherlands',    results:['D','W','W'], advanced:['R32'], eliminated:false },
+  { id:'usa',         player:'Kyle',   name:'USA',            results:['W','W','L'], advanced:['R32'], eliminated:false },
+  { id:'algeria',     player:'Kyle',   name:'Algeria',        results:['L','W','D'], advanced:['R32'], eliminated:false },
+  { id:'czechia',     player:'Kyle',   name:'Czechia',        results:['L','D','L'], advanced:[],      eliminated:true  },
+  { id:'belgium',     player:'Austin', name:'Belgium',        results:['D','D','W'], advanced:['R32'], eliminated:false },
+  { id:'uruguay',     player:'Austin', name:'Uruguay',        results:['D','D','L'], advanced:[],      eliminated:true  },
+  { id:'ghana',       player:'Austin', name:'Ghana',          results:['W','D','L'], advanced:['R32'], eliminated:false },
+  { id:'southkorea',  player:'Austin', name:'South Korea',    results:['W','L','L'], advanced:[],      eliminated:true  },
+];
 
-  const FLAGS = {
-    'Brazil':'🇧🇷','Croatia':'🇭🇷','Ivory Coast':'🇨🇮','Cape Verde':'🇨🇻',
-    'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Mexico':'🇲🇽','Senegal':'🇸🇳','Uzbekistan':'🇺🇿',
-    'Norway':'🇳🇴','Colombia':'🇨🇴','Bosnia & Herz.':'🇧🇦','Egypt':'🇪🇬',
-    'Netherlands':'🇳🇱','USA':'🇺🇸','Algeria':'🇩🇿','Czechia':'🇨🇿',
-    'Spain':'🇪🇸','Ecuador':'🇪🇨','Sweden':'🇸🇪','Panama':'🇵🇦',
-    'Germany':'🇩🇪','Morocco':'🇲🇦','Paraguay':'🇵🇾','Iran':'🇮🇷',
-    'Argentina':'🇦🇷','Japan':'🇯🇵','Canada':'🇨🇦','Australia':'🇦🇺',
-    'France':'🇫🇷','Austria':'🇦🇹','Turkey':'🇹🇷','Haiti':'🇭🇹',
-    'Portugal':'🇵🇹','Switzerland':'🇨🇭','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Tunisia':'🇹🇳',
-    'Belgium':'🇧🇪','Uruguay':'🇺🇾','Ghana':'🇬🇭','South Korea':'🇰🇷'
-  };
+const FLAGS = {
+  'Brazil':'🇧🇷','Croatia':'🇭🇷','Ivory Coast':'🇨🇮','Cape Verde':'🇨🇻',
+  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Mexico':'🇲🇽','Senegal':'🇸🇳','Uzbekistan':'🇺🇿',
+  'Norway':'🇳🇴','Colombia':'🇨🇴','Bosnia & Herz.':'🇧🇦','Egypt':'🇪🇬',
+  'Netherlands':'🇳🇱','USA':'🇺🇸','Algeria':'🇩🇿','Czechia':'🇨🇿',
+  'Spain':'🇪🇸','Ecuador':'🇪🇨','Sweden':'🇸🇪','Panama':'🇵🇦',
+  'Germany':'🇩🇪','Morocco':'🇲🇦','Paraguay':'🇵🇾','Iran':'🇮🇷',
+  'Argentina':'🇦🇷','Japan':'🇯🇵','Canada':'🇨🇦','Australia':'🇦🇺',
+  'France':'🇫🇷','Austria':'🇦🇹','Turkey':'🇹🇷','Haiti':'🇭🇹',
+  'Portugal':'🇵🇹','Switzerland':'🇨🇭','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Tunisia':'🇹🇳',
+  'Belgium':'🇧🇪','Uruguay':'🇺🇾','Ghana':'🇬🇭','South Korea':'🇰🇷'
+};
 
-  const TAGLINES = {
-    'Burk':'Blood. Sweat. Brasil.','Rami':'Clinical. Composed. Champion.',
-    'Brett':'Cold Weather. Hot Takes.','Kyle':'Total Football. Total Chaos.',
-    'Tyler':'Ice in Veins.','Erich':'The Professor.',
-    'JR':'Press. Attack. Repeat.','Van':'Adventure Mode: ON.',
-    'Zack':'Play Fast. Win Big.','Austin':'Built Different.'
-  };
+const TAGLINES = {
+  'Burk':'Blood. Sweat. Brasil.','Rami':'Clinical. Composed. Champion.',
+  'Brett':'Cold Weather. Hot Takes.','Kyle':'Total Football. Total Chaos.',
+  'Tyler':'Ice in Veins.','Erich':'The Professor.',
+  'JR':'Press. Attack. Repeat.','Van':'Adventure Mode: ON.',
+  'Zack':'Play Fast. Win Big.','Austin':'Built Different.'
+};
 
-  const ADV_PTS    = {R32:3,R16:4,QF:5,SF:6,F:7,W:8};
-  const ADV_LABELS = {R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'Final',W:'Champ'};
-  const ROUND_PTS  = {R16:4,QF:5,SF:6,F:7,W:8};
-  const ROUND_ORDER = ['R16','QF','SF','F','W'];
+const ADV_PTS    = { R32:3, R16:4, QF:5, SF:6, F:7, W:8 };
+const ADV_LABELS = { R32:'R32', R16:'R16', QF:'QF', SF:'SF', F:'Final', W:'Champ' };
+const ROUND_PTS  = { R16:4, QF:5, SF:6, F:7, W:8 };
+const ROUND_ORDER = ['R16','QF','SF','F','W'];
+const TEAM_STRENGTH = {
+  'France':4,'Argentina':4,'Spain':4,'Brazil':4,
+  'England':3,'Portugal':3,'Morocco':3,'Colombia':3,'Norway':3,'Mexico':3,'Switzerland':3,
+  'Belgium':2,'Egypt':2,'Japan':2,'Canada':2,'USA':2,'Paraguay':2,'Austria':2,'Senegal':2,
+  'Bosnia & Herz.':1,'Algeria':1,'Ghana':1,'Cape Verde':1,'Ecuador':1,'Sweden':1,'Croatia':1
+};
+const WIN_PROB = { 4:0.7, 3:0.5, 2:0.3, 1:0.15 };
 
-  const TEAM_STRENGTH = {
-    'France':4,'Argentina':4,'Spain':4,'Brazil':4,
-    'England':3,'Portugal':3,'Morocco':3,'Colombia':3,'Norway':3,'Mexico':3,'Switzerland':3,
-    'Belgium':2,'Egypt':2,'Japan':2,'Canada':2,'USA':2,'Paraguay':2,'Austria':2,'Senegal':2,
-    'Bosnia & Herz.':1,'Algeria':1,'Ghana':1,'Cape Verde':1,'Ecuador':1,'Sweden':1,'Croatia':1,
-  };
+let teamsData = [];
+let isAdmin = false;
+let openBreakdown = null;
+let autoSyncTimer = null;
 
-  function calcTeamPts(t) {
-    let pts = 0;
-    t.results.forEach(r => { if (r==='W') pts+=2; else if (r==='D') pts+=1; });
-    t.advanced.forEach(s => { pts += (ADV_PTS[s]||0); });
-    return pts;
-  }
+function calcTeamPts(t) {
+  let pts = 0;
+  t.results.forEach(r => { if (r==='W') pts+=2; else if (r==='D') pts+=1; });
+  t.advanced.forEach(s => { pts += (ADV_PTS[s]||0); });
+  return pts;
+}
 
-  function calcPlayerPts(p) { return p.teams.reduce((s,t) => s+calcTeamPts(t), 0); }
+function calcPlayerPts(p) {
+  return p.teams.reduce((s,t) => s + calcTeamPts(t), 0);
+}
 
-  function calcProjected(player) {
-    const current = calcPlayerPts(player);
-    let bonus = 0;
-    const WIN_PROB = {4:0.7, 3:0.5, 2:0.3, 1:0.15};
-    player.teams.forEach(t => {
-      if (t.eliminated) return;
-      const tier = TEAM_STRENGTH[t.name] || 1;
-      const lastAdv = t.advanced[t.advanced.length - 1];
-      const lastIdx = ROUND_ORDER.indexOf(lastAdv);
-      const remaining = ROUND_ORDER.slice(lastIdx + 1);
-      const prob = WIN_PROB[tier] || 0.15;
-      remaining.forEach((round, i) => {
-        bonus += Math.pow(prob, i+1) * ROUND_PTS[round];
+function calcProjected(player) {
+  const current = calcPlayerPts(player);
+  let bonus = 0;
+  player.teams.forEach(t => {
+    if (t.eliminated) return;
+    const tier = TEAM_STRENGTH[t.name] || 1;
+    const prob = WIN_PROB[tier] || 0.15;
+    const lastAdv = t.advanced[t.advanced.length - 1];
+    const lastIdx = ROUND_ORDER.indexOf(lastAdv);
+    const remaining = ROUND_ORDER.slice(lastIdx + 1);
+    remaining.forEach((round, i) => {
+      bonus += Math.pow(prob, i + 1) * ROUND_PTS[round];
+    });
+  });
+  return Math.round(current + bonus);
+}
+
+function groupByPlayer() {
+  const map = {};
+  teamsData.forEach(t => {
+    if (!map[t.player]) map[t.player] = [];
+    map[t.player].push(t);
+  });
+  return Object.entries(map).map(([name, teams]) => ({ name, teams }));
+}
+
+function render() {
+  const players = groupByPlayer().sort((a,b) => calcPlayerPts(b) - calcPlayerPts(a));
+  const container = document.getElementById('leaderboard');
+  container.innerHTML = '';
+  players.forEach((player, i) => {
+    const rank = i + 1;
+    const pts = calcPlayerPts(player);
+    const proj = calcProjected(player);
+    const isOpen = openBreakdown === player.name;
+
+    const card = document.createElement('div');
+    card.className = `leader-card rank-${rank<=3?rank:'other'}`;
+    card.onclick = () => { openBreakdown = openBreakdown===player.name ? null : player.name; render(); };
+
+    const pills = player.teams.map(t =>
+      `<span class="team-pill ${t.eliminated?'eliminated':'alive'}">${FLAGS[t.name]||''} ${t.name}</span>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="rank-num">${rank}</div>
+      <div class="player-info">
+        <div class="player-name">${player.name}</div>
+        <div class="player-tagline">${TAGLINES[player.name]||''}</div>
+      </div>
+      <div class="teams-row">${pills}</div>
+      <div class="score-block">
+        <div class="score-pts">${pts}</div>
+        <div class="score-label">pts</div>
+        <div class="score-proj">proj ~${proj}</div>
+      </div>`;
+    container.appendChild(card);
+
+    const panel = document.createElement('div');
+    panel.className = `breakdown-panel ${isOpen?'open':''}`;
+    const teamsHTML = player.teams.map(t => {
+      const tPts = calcTeamPts(t);
+      const resHTML = t.results.map(r => `<span class="result-badge ${r}">${r}</span>`).join('');
+      const advHTML = t.advanced.map(a => `<span class="result-badge adv">${ADV_LABELS[a]}</span>`).join('');
+      const elimBadge = t.eliminated ? `<span class="result-badge elim">OUT</span>` : '';
+      return `<div class="breakdown-team" style="${t.eliminated?'opacity:.5':''}">
+        <div class="breakdown-team-name">${FLAGS[t.name]||''} ${t.name}</div>
+        <div class="match-results">${resHTML}${advHTML}${elimBadge}</div>
+        <div class="team-pts">${tPts}</div>
+      </div>`;
+    }).join('');
+    panel.innerHTML = `<div class="breakdown-title">Team Breakdown — click to collapse</div><div class="breakdown-teams">${teamsHTML}</div>`;
+    container.appendChild(panel);
+  });
+}
+
+function startListening() {
+  onSnapshot(teamsCol, snap => {
+    teamsData = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    render();
+    document.getElementById('lastUpdated').textContent = 'Live · ' + new Date().toLocaleString();
+    document.getElementById('connDot').classList.remove('offline');
+    document.getElementById('connText').textContent = 'Connected · Live updates active';
+  }, () => {
+    document.getElementById('connDot').classList.add('offline');
+    document.getElementById('connText').textContent = 'Connection error';
+  });
+}
+
+async function seedIfEmpty() {
+  const snap = await getDocs(teamsCol);
+  if (snap.empty) {
+    const batch = writeBatch(db);
+    SEED_DATA.forEach(t => {
+      batch.set(doc(db,"teams",t.id), {
+        player:t.player, name:t.name, results:t.results,
+        advanced:t.advanced, eliminated:t.eliminated
       });
     });
-    return Math.round(current + bonus);
+    await batch.commit();
   }
+}
 
-  function groupByPlayer() {
-    const map = {};
-    teamsData.forEach(t => {
-      if (!map[t.player]) map[t.player] = [];
-      map[t.player].push(t);
-    });
-    return Object.entries(map).map(([name, teams]) => ({ name, teams }));
+// ── AUTO-SYNC ──────────────────────────────────────────────────────────────
+function isMatchHours() {
+  const h = new Date().getUTCHours();
+  return h >= 12 && h <= 24;
+}
+
+async function autoSync() {
+  const statusEl = document.getElementById('autoSyncText');
+  if (!isMatchHours()) {
+    statusEl.textContent = 'Auto-sync paused (no matches scheduled)';
+    return;
   }
-
-  let teamsData = [];
-  let isAdmin = false;
-  let openBreakdown = null;
-
-  async function seedIfEmpty() {
-    const snap = await getDocs(teamsCollection);
-    if (snap.empty) {
-      const batch = writeBatch(db);
-      SEED_DATA.forEach(t => {
-        batch.set(doc(db, "teams", t.id), {
-          player:t.player, name:t.name, results:t.results,
-          advanced:t.advanced, eliminated:t.eliminated
-        });
-      });
-      await batch.commit();
-    }
-  }
-
-  function render() {
-    const players = groupByPlayer().sort((a,b) => calcPlayerPts(b)-calcPlayerPts(a));
-    const container = document.getElementById('leaderboard');
-    container.innerHTML = '';
-    players.forEach((player, i) => {
-      const rank = i+1, pts = calcPlayerPts(player), proj = calcProjected(player);
-      const isOpen = openBreakdown === player.name;
-      const card = document.createElement('div');
-      card.className = `leader-card rank-${rank<=3?rank:'other'}`;
-      card.onclick = () => { openBreakdown = openBreakdown===player.name?null:player.name; render(); };
-      const pills = player.teams.map(t =>
-        `<span class="team-pill ${t.eliminated?'eliminated':'alive'}">${FLAGS[t.name]||''} ${t.name}</span>`
-      ).join('');
-      card.innerHTML = `
-        <div class="rank-num">${rank}</div>
-        <div class="player-info">
-          <div class="player-name">${player.name}</div>
-          <div class="player-tagline">${TAGLINES[player.name]||''}</div>
-        </div>
-        <div class="teams-row">${pills}</div>
-        <div class="score-block">
-          <div class="score-pts">${pts}</div>
-          <div class="score-label">pts</div>
-          <div class="score-proj">proj ~${proj}</div>
-        </div>`;
-      container.appendChild(card);
-      const panel = document.createElement('div');
-      panel.className = `breakdown-panel ${isOpen?'open':''}`;
-      const teamsHTML = player.teams.map(t => {
-        const tPts = calcTeamPts(t);
-        const resHTML = t.results.map(r=>`<span class="result-badge ${r}">${r}</span>`).join('');
-        const advHTML = t.advanced.map(a=>`<span class="result-badge adv">${ADV_LABELS[a]}</span>`).join('');
-        const elimBadge = t.eliminated ? `<span class="result-badge elim">OUT</span>` : '';
-        return `<div class="breakdown-team" style="${t.eliminated?'opacity:.5':''}">
-          <div class="breakdown-team-name">${FLAGS[t.name]||''} ${t.name}</div>
-          <div class="match-results">${resHTML}${advHTML}${elimBadge}</div>
-          <div class="team-pts">${tPts}</div>
-        </div>`;
-      }).join('');
-      panel.innerHTML = `<div class="breakdown-title">Team Breakdown — click to collapse</div><div class="breakdown-teams">${teamsHTML}</div>`;
-      container.appendChild(panel);
-    });
-  }
-
-  function startListening() {
-    onSnapshot(teamsCollection, snap => {
-      teamsData = snap.docs.map(d => ({id:d.id,...d.data()}));
-      render();
-      document.getElementById('lastUpdated').textContent = 'Live · Updated ' + new Date().toLocaleString();
-      document.getElementById('connDot').classList.remove('offline');
-      document.getElementById('connText').textContent = 'Connected · Live updates active';
-    }, err => {
-      document.getElementById('connDot').classList.add('offline');
-      document.getElementById('connText').textContent = 'Connection error';
-    });
-  }
-
-  async function init() {
-    try {
-      await seedIfEmpty();
-      startListening();
-    } catch(e) {
-      document.getElementById('connDot').classList.add('offline');
-      document.getElementById('connText').textContent = 'Connection failed — check Firebase config';
-      document.getElementById('lastUpdated').textContent = 'Offline';
-    }
-  }
-
-  window.showTab = function(tab, e) {
-    document.getElementById('tab-leaderboard').classList.toggle('hidden', tab!=='leaderboard');
-    document.getElementById('tab-scoring').classList.toggle('hidden', tab!=='scoring');
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    if (e&&e.target) e.target.classList.add('active');
-  };
-
-  window.openAdmin = function() {
-    document.getElementById('adminModal').classList.add('open');
-    if (isAdmin) showAdminEdit();
-  };
-  window.closeAdmin = function() {
-    document.getElementById('adminModal').classList.remove('open');
-  };
-  window.checkPassword = function() {
-    if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
-      isAdmin = true;
-      showAdminEdit();
+  statusEl.textContent = 'Syncing...';
+  try {
+    const res = await fetch('/api/sync-scores', { method:'POST' });
+    const result = await res.json();
+    if (result.success) {
+      const time = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      statusEl.textContent = `Last synced ${time} · ${result.matchesProcessed} matches`;
     } else {
-      document.getElementById('loginError').textContent = 'Incorrect password';
+      statusEl.textContent = 'Sync error — will retry';
     }
-  };
-
-  function showAdminEdit() {
-    document.getElementById('adminLoginView').classList.add('hidden');
-    document.getElementById('adminEditView').classList.remove('hidden');
-    renderAdminList();
+  } catch(e) {
+    statusEl.textContent = 'Sync error — will retry';
   }
+}
 
-  function renderAdminList() {
-    const list = document.getElementById('adminTeamsList');
-    list.innerHTML = '';
-    teamsData.sort((a,b)=>a.player.localeCompare(b.player)).forEach(t => {
-      const row = document.createElement('div');
-      row.className = 'admin-row';
-      const selects = [0,1,2].map(i =>
-        `<select onchange="window.updateResult('${t.id}',${i},this.value)">
-          ${['?','W','D','L'].map(v=>`<option value="${v}" ${t.results[i]===v?'selected':''}>${v}</option>`).join('')}
-        </select>`
-      ).join('');
-      row.innerHTML = `
-        <span>${t.player} — ${t.name}</span>
-        ${selects}
-        <label style="font-size:.7rem;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" ${t.eliminated?'checked':''} onchange="window.updateEliminated('${t.id}',this.checked)"> OUT
-        </label>`;
-      list.appendChild(row);
-    });
+function startAutoSync() {
+  document.getElementById('autoSyncStatus').style.display = 'flex';
+  autoSync();
+  autoSyncTimer = setInterval(autoSync, 60000);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearInterval(autoSyncTimer);
+  } else {
+    autoSync();
+    autoSyncTimer = setInterval(autoSync, 60000);
   }
+});
+// ──────────────────────────────────────────────────────────────────────────
 
-  window.updateResult = async function(teamId, index, value) {
-    const team = teamsData.find(t=>t.id===teamId);
-    if (!team) return;
-    const newResults = [...team.results];
-    newResults[index] = value;
-    await setDoc(doc(db,"teams",teamId), {...team, results:newResults}, {merge:true});
-  };
+async function init() {
+  try {
+    await seedIfEmpty();
+    startListening();
+    startAutoSync();
+  } catch(e) {
+    document.getElementById('connDot').classList.add('offline');
+    document.getElementById('connText').textContent = 'Connection failed — check Firebase config';
+    document.getElementById('lastUpdated').textContent = 'Offline';
+  }
+}
 
-  window.updateEliminated = async function(teamId, checked) {
-    await setDoc(doc(db,"teams",teamId), {eliminated:checked}, {merge:true});
-  };
+window.showTab = function(tab, e) {
+  document.getElementById('tab-leaderboard').classList.toggle('hidden', tab!=='leaderboard');
+  document.getElementById('tab-scoring').classList.toggle('hidden', tab!=='scoring');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (e && e.target) e.target.classList.add('active');
+};
 
-  window.resetData = async function() {
-    if (!confirm('This will wipe all Firestore data and reseed from scratch. Are you sure?')) return;
-    const btn = document.getElementById('resetBtn');
-    const status = document.getElementById('syncStatus');
-    btn.disabled = true; btn.textContent = '⚠️ Resetting...'; status.textContent = '';
-    try {
-      const res = await fetch('/api/reset-data', {method:'POST'});
-      const result = await res.json();
-      if (result.success) {
-        status.textContent = `✅ ${result.message}`;
-        status.style.color = 'var(--green)';
-      } else {
-        status.textContent = `⚠️ ${result.error||'Reset failed'}`;
-        status.style.color = 'var(--red)';
-      }
-    } catch(e) {
-      status.textContent = `⚠️ Could not reach reset endpoint: ${e.message}`;
+window.openAdmin = function() {
+  document.getElementById('adminModal').classList.add('open');
+  if (isAdmin) showAdminEdit();
+};
+
+window.closeAdmin = function() {
+  document.getElementById('adminModal').classList.remove('open');
+};
+
+window.checkPassword = function() {
+  if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
+    isAdmin = true;
+    showAdminEdit();
+  } else {
+    document.getElementById('loginError').textContent = 'Incorrect password';
+  }
+};
+
+function showAdminEdit() {
+  document.getElementById('adminLoginView').classList.add('hidden');
+  document.getElementById('adminEditView').classList.remove('hidden');
+  renderAdminList();
+}
+
+function renderAdminList() {
+  const list = document.getElementById('adminTeamsList');
+  list.innerHTML = '';
+  [...teamsData].sort((a,b) => a.player.localeCompare(b.player)).forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'admin-row';
+    const selects = [0,1,2].map(i =>
+      `<select onchange="window.updateResult('${t.id}',${i},this.value)">
+        ${['?','W','D','L'].map(v => `<option value="${v}" ${t.results[i]===v?'selected':''}>${v}</option>`).join('')}
+      </select>`
+    ).join('');
+    row.innerHTML = `
+      <span>${t.player} — ${t.name}</span>
+      ${selects}
+      <label style="font-size:.7rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" ${t.eliminated?'checked':''} onchange="window.updateEliminated('${t.id}',this.checked)"> OUT
+      </label>`;
+    list.appendChild(row);
+  });
+}
+
+window.updateResult = async function(teamId, index, value) {
+  const team = teamsData.find(t => t.id===teamId);
+  if (!team) return;
+  const newResults = [...team.results];
+  newResults[index] = value;
+  await setDoc(doc(db,"teams",teamId), { ...team, results:newResults }, { merge:true });
+};
+
+window.updateEliminated = async function(teamId, checked) {
+  await setDoc(doc(db,"teams",teamId), { eliminated:checked }, { merge:true });
+};
+
+window.syncLiveScores = async function() {
+  const btn = document.getElementById('syncBtn');
+  const status = document.getElementById('syncStatus');
+  btn.disabled = true;
+  btn.textContent = '🔄 Syncing...';
+  status.textContent = '';
+  try {
+    const res = await fetch('/api/sync-scores', { method:'POST' });
+    const result = await res.json();
+    if (result.success) {
+      status.textContent = `✅ Synced ${result.matchesProcessed} matches, updated ${result.teamsUpdated} teams.`;
+      status.style.color = 'var(--green)';
+    } else {
+      status.textContent = `⚠️ ${result.error||'Sync failed'}`;
       status.style.color = 'var(--red)';
     }
-    btn.disabled = false; btn.textContent = '⚠️ Reset All Data to Seed';
-  };
+  } catch(e) {
+    status.textContent = `⚠️ Could not reach sync endpoint: ${e.message}`;
+    status.style.color = 'var(--red)';
+  }
+  btn.disabled = false;
+  btn.textContent = '🔄 Sync Live Scores from ESPN';
+};
 
-  window.syncLiveScores = async function() {
-    const btn = document.getElementById('syncBtn');
-    const status = document.getElementById('syncStatus');
-    btn.disabled = true; btn.textContent = '🔄 Syncing...'; status.textContent = '';
-    try {
-      const res = await fetch('/api/sync-scores', {method:'POST'});
-      const result = await res.json();
-      if (result.success) {
-        status.textContent = `✅ Synced ${result.matchesProcessed} matches, updated ${result.teamsUpdated} teams.`;
-        status.style.color = 'var(--green)';
-      } else {
-        status.textContent = `⚠️ ${result.error||'Sync failed'}`;
-        status.style.color = 'var(--red)';
-      }
-    } catch(e) {
-      status.textContent = `⚠️ Could not reach sync endpoint: ${e.message}`;
+window.resetData = async function() {
+  if (!confirm('This will wipe all Firestore data and reseed from scratch. Are you sure?')) return;
+  const btn = document.getElementById('resetBtn');
+  const status = document.getElementById('syncStatus');
+  btn.disabled = true;
+  btn.textContent = '⚠️ Resetting...';
+  status.textContent = '';
+  try {
+    const res = await fetch('/api/reset-data', { method:'POST' });
+    const result = await res.json();
+    if (result.success) {
+      status.textContent = `✅ ${result.message}`;
+      status.style.color = 'var(--green)';
+    } else {
+      status.textContent = `⚠️ ${result.error||'Reset failed'}`;
       status.style.color = 'var(--red)';
     }
-    btn.disabled = false; btn.textContent = '🔄 Sync Live Scores from ESPN';
-  };
+  } catch(e) {
+    status.textContent = `⚠️ Could not reach reset endpoint: ${e.message}`;
+    status.style.color = 'var(--red)';
+  }
+  btn.disabled = false;
+  btn.textContent = '⚠️ Reset All Data to Seed';
+};
 
-  init();
+init();
 </script>
 </body>
 </html>
