@@ -49,52 +49,46 @@
   .score-proj{font-size:.7rem;color:var(--text-dim);margin-top:2px}
   .breakdown-panel{display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:16px 20px}
   .breakdown-panel.open{display:block}
-  .breakdown-title{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  .breakdown-title{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
   .breakdown-teams{display:flex;flex-direction:column;gap:8px}
   .breakdown-team{display:grid;grid-template-columns:155px 1fr auto;align-items:center;gap:12px;font-size:.8rem}
   .breakdown-team-name{display:flex;align-items:center;gap:6px;font-weight:600}
   .match-results{display:flex;gap:4px;flex-wrap:wrap}
-  .result-badge{width:22px;height:22px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;cursor:default}
+  .result-badge{width:22px;height:22px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
   .result-badge.W{background:var(--green);color:#000}
   .result-badge.D{background:var(--draw);color:#000}
   .result-badge.L{background:var(--red);color:#fff}
   .result-badge.adv{background:var(--gold);color:#000;font-size:.5rem;width:30px}
   .result-badge.elim{background:#333;color:#666;font-size:.5rem;width:30px}
-  .team-pts{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold);text-align:right;min-width:40px}
   .scoring-ref{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px}
   .scoring-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px}
   .scoring-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:3px;font-size:.8rem}
   .scoring-pts{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold)}
   .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;color:var(--gold);margin-bottom:16px}
   .hidden{display:none}
-
-  /* ADMIN PANEL */
   .admin-toggle{position:fixed;bottom:16px;right:16px;width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:.9rem;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center}
   .admin-toggle:hover{border-color:var(--gold-dim);color:var(--gold)}
   .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
   .admin-modal.open{display:flex}
-  .admin-box{background:var(--surface);border:1px solid var(--gold-dim);border-radius:6px;padding:24px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto}
+  .admin-box{background:var(--surface);border:1px solid var(--gold-dim);border-radius:6px;padding:24px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
   .admin-box h3{font-family:'Bebas Neue',sans-serif;color:var(--gold);font-size:1.4rem;margin-bottom:16px;letter-spacing:.05em}
   .admin-box input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:4px;font-size:.9rem;margin-bottom:12px}
   .admin-box select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:4px;font-size:.8rem}
   .admin-btn{background:var(--gold);color:#000;border:none;padding:10px 16px;border-radius:4px;font-weight:600;cursor:pointer;font-size:.85rem;width:100%}
-  .admin-btn:hover{background:var(--gold-light)}
+  .admin-btn:hover{background:#E8C96A}
   .admin-btn.secondary{background:var(--surface2);color:var(--text-dim);margin-top:8px}
-  .admin-row{display:grid;grid-template-columns:1fr auto auto auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem}
   .admin-close{position:absolute;top:16px;right:20px;cursor:pointer;color:var(--text-dim);font-size:1.4rem}
-  .admin-section{margin-bottom:20px}
-  .admin-section label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px}
-
+  .admin-row{display:grid;grid-template-columns:1fr auto auto auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem}
   @media(max-width:640px){
     .leader-card{grid-template-columns:28px 100px 1fr auto;gap:10px;padding:12px 14px}
     .player-name{font-size:1.1rem}.content{padding:16px 12px}
     .tabs{padding:0 12px}.header{padding:16px}.tab{padding:10px 12px;font-size:.72rem}
     .breakdown-team{grid-template-columns:120px 1fr auto}
-    .admin-row{grid-template-columns:1fr;gap:4px}
   }
 </style>
 </head>
 <body>
+
 <div class="header">
   <div>
     <div class="league-name">HFF League</div>
@@ -105,14 +99,17 @@
     <div class="last-updated" id="lastUpdated">Connecting...</div>
   </div>
 </div>
+
 <div class="status-bar">
-  <div class="status-item"><div class="dot" id="connDot"></div> <span id="connText">Connecting to Firebase...</span></div>
+  <div class="status-item"><div class="dot" id="connDot"></div><span id="connText">Connecting to Firebase...</span></div>
   <div class="status-item">🎯 W=2 · D=1 · R32=3 · R16=4 · QF=5 · SF=6 · F=7 · 🏆=8</div>
 </div>
+
 <div class="tabs">
   <button class="tab active" onclick="showTab('leaderboard',event)">Leaderboard</button>
   <button class="tab" onclick="showTab('scoring',event)">Scoring Rules</button>
 </div>
+
 <div class="content">
   <div id="tab-leaderboard"><div class="leaderboard" id="leaderboard"></div></div>
   <div id="tab-scoring" class="hidden">
@@ -157,91 +154,81 @@
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- FIREBASE SETUP — paste your config values below              -->
-<!-- Get these from: Firebase Console → Project Settings → Your Apps -->
-<!-- ============================================================ -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getFirestore, collection, doc, getDocs, setDoc, onSnapshot, writeBatch
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, doc, getDocs, setDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ▼▼▼ PASTE YOUR FIREBASE CONFIG HERE ▼▼▼
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBYjYgJRr54_oVEW8pt3GXFNHU-pg5dSY4",
+    authDomain: "hff-tracker-wc2026.firebaseapp.com",
+    projectId: "hff-tracker-wc2026",
+    storageBucket: "hff-tracker-wc2026.firebasestorage.app",
+    messagingSenderId: "5623690016",
+    appId: "1:5623690016:web:e7c007f77134b05a561d45"
   };
-  // ▲▲▲ PASTE YOUR FIREBASE CONFIG ABOVE ▲▲▲
 
-  // ▼▼▼ SET YOUR OWN ADMIN PASSWORD HERE ▼▼▼
-  const ADMIN_PASSWORD = "changeme123";
-  // ▲▲▲ CHANGE THIS BEFORE PUBLISHING ▲▲▲
+  const ADMIN_PASSWORD = "aaronstewart";
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const teamsCollection = collection(db, "teams");
 
-  // Default seed data — only written if the database is empty on first load
   const SEED_DATA = [
-    { id:'norway',     player:'Brett',  name:'Norway',         results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { id:'colombia',   player:'Brett',  name:'Colombia',       results:['W','D','W'], advanced:['R32'], eliminated:false },
-    { id:'bosnia',     player:'Brett',  name:'Bosnia & Herz.', results:['D','L','W'], advanced:['R32'], eliminated:false },
-    { id:'egypt',      player:'Brett',  name:'Egypt',          results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { id:'england',    player:'Rami',   name:'England',        results:['W','D','W'], advanced:['R32'], eliminated:false },
-    { id:'mexico',     player:'Rami',   name:'Mexico',         results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'senegal',    player:'Rami',   name:'Senegal',        results:['L','L','W'], advanced:['R32'], eliminated:false },
-    { id:'uzbekistan', player:'Rami',   name:'Uzbekistan',     results:['L','L','L'], advanced:[],      eliminated:true  },
-    { id:'argentina',  player:'Van',    name:'Argentina',      results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'japan',      player:'Van',    name:'Japan',          results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { id:'canada',     player:'Van',    name:'Canada',         results:['D','W','L'], advanced:['R32'], eliminated:false },
-    { id:'australia',  player:'Van',    name:'Australia',      results:['L','L','D'], advanced:[],      eliminated:true  },
-    { id:'france',     player:'Tyler',  name:'France',         results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'austria',    player:'Tyler',  name:'Austria',        results:['W','L','D'], advanced:['R32'], eliminated:false },
-    { id:'turkey',     player:'Tyler',  name:'Turkey',         results:['W','L','W'], advanced:[],      eliminated:true  },
-    { id:'haiti',      player:'Tyler',  name:'Haiti',          results:['L','L','L'], advanced:[],      eliminated:true  },
-    { id:'spain',      player:'Erich',  name:'Spain',          results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'ecuador',    player:'Erich',  name:'Ecuador',        results:['L','D','W'], advanced:['R32'], eliminated:false },
-    { id:'sweden',     player:'Erich',  name:'Sweden',         results:['W','L','D'], advanced:['R32'], eliminated:false },
-    { id:'panama',     player:'Erich',  name:'Panama',         results:['D','L','L'], advanced:[],      eliminated:true  },
-    { id:'brazil',     player:'Burk',   name:'Brazil',         results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'croatia',    player:'Burk',   name:'Croatia',        results:['L','W','W'], advanced:['R32'], eliminated:false },
-    { id:'ivorycoast', player:'Burk',   name:'Ivory Coast',    results:['W','L','W'], advanced:['R32'], eliminated:false },
-    { id:'capeverde',  player:'Burk',   name:'Cape Verde',     results:['D','D','D'], advanced:['R32'], eliminated:false },
-    { id:'portugal',   player:'Zack',   name:'Portugal',       results:['D','W','D'], advanced:['R32'], eliminated:false },
-    { id:'switzerland',player:'Zack',   name:'Switzerland',    results:['W','W','W'], advanced:['R32'], eliminated:false },
-    { id:'scotland',   player:'Zack',   name:'Scotland',       results:['W','L','L'], advanced:[],      eliminated:true  },
-    { id:'tunisia',    player:'Zack',   name:'Tunisia',        results:['L','L','L'], advanced:[],      eliminated:true  },
-    { id:'germany',    player:'JR',     name:'Germany',        results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { id:'morocco',    player:'JR',     name:'Morocco',        results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'paraguay',   player:'JR',     name:'Paraguay',       results:['L','W','D'], advanced:['R32'], eliminated:false },
-    { id:'iran',       player:'JR',     name:'Iran',           results:['D','D','D'], advanced:[],      eliminated:true  },
-    { id:'netherlands',player:'Kyle',   name:'Netherlands',    results:['D','W','W'], advanced:['R32'], eliminated:false },
-    { id:'usa',        player:'Kyle',   name:'USA',            results:['W','W','L'], advanced:['R32'], eliminated:false },
-    { id:'algeria',    player:'Kyle',   name:'Algeria',        results:['L','W','D'], advanced:['R32'], eliminated:false },
-    { id:'czechia',    player:'Kyle',   name:'Czechia',        results:['L','D','L'], advanced:[],      eliminated:true  },
-    { id:'belgium',    player:'Austin', name:'Belgium',        results:['D','D','W'], advanced:['R32'], eliminated:false },
-    { id:'uruguay',    player:'Austin', name:'Uruguay',        results:['D','D','L'], advanced:[],      eliminated:true  },
-    { id:'ghana',      player:'Austin', name:'Ghana',          results:['W','D','L'], advanced:['R32'], eliminated:false },
-    { id:'southkorea', player:'Austin', name:'South Korea',    results:['W','L','L'], advanced:[],      eliminated:true  },
+    { id:'norway',      player:'Brett',  name:'Norway',         results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { id:'colombia',    player:'Brett',  name:'Colombia',       results:['W','D','W'], advanced:['R32'], eliminated:false },
+    { id:'bosnia',      player:'Brett',  name:'Bosnia & Herz.', results:['D','L','W'], advanced:['R32'], eliminated:false },
+    { id:'egypt',       player:'Brett',  name:'Egypt',          results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { id:'england',     player:'Rami',   name:'England',        results:['W','D','W'], advanced:['R32'], eliminated:false },
+    { id:'mexico',      player:'Rami',   name:'Mexico',         results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'senegal',     player:'Rami',   name:'Senegal',        results:['L','L','W'], advanced:['R32'], eliminated:false },
+    { id:'uzbekistan',  player:'Rami',   name:'Uzbekistan',     results:['L','L','L'], advanced:[],      eliminated:true  },
+    { id:'argentina',   player:'Van',    name:'Argentina',      results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'japan',       player:'Van',    name:'Japan',          results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { id:'canada',      player:'Van',    name:'Canada',         results:['D','W','L'], advanced:['R32'], eliminated:false },
+    { id:'australia',   player:'Van',    name:'Australia',      results:['L','L','D'], advanced:[],      eliminated:true  },
+    { id:'france',      player:'Tyler',  name:'France',         results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'austria',     player:'Tyler',  name:'Austria',        results:['W','L','D'], advanced:['R32'], eliminated:false },
+    { id:'turkey',      player:'Tyler',  name:'Turkey',         results:['W','L','W'], advanced:[],      eliminated:true  },
+    { id:'haiti',       player:'Tyler',  name:'Haiti',          results:['L','L','L'], advanced:[],      eliminated:true  },
+    { id:'spain',       player:'Erich',  name:'Spain',          results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'ecuador',     player:'Erich',  name:'Ecuador',        results:['L','D','W'], advanced:['R32'], eliminated:false },
+    { id:'sweden',      player:'Erich',  name:'Sweden',         results:['W','L','D'], advanced:['R32'], eliminated:false },
+    { id:'panama',      player:'Erich',  name:'Panama',         results:['D','L','L'], advanced:[],      eliminated:true  },
+    { id:'brazil',      player:'Burk',   name:'Brazil',         results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'croatia',     player:'Burk',   name:'Croatia',        results:['L','W','W'], advanced:['R32'], eliminated:false },
+    { id:'ivorycoast',  player:'Burk',   name:'Ivory Coast',    results:['W','L','W'], advanced:['R32'], eliminated:false },
+    { id:'capeverde',   player:'Burk',   name:'Cape Verde',     results:['D','D','D'], advanced:['R32'], eliminated:false },
+    { id:'portugal',    player:'Zack',   name:'Portugal',       results:['D','W','D'], advanced:['R32'], eliminated:false },
+    { id:'switzerland', player:'Zack',   name:'Switzerland',    results:['W','W','W'], advanced:['R32'], eliminated:false },
+    { id:'scotland',    player:'Zack',   name:'Scotland',       results:['W','L','L'], advanced:[],      eliminated:true  },
+    { id:'tunisia',     player:'Zack',   name:'Tunisia',        results:['L','L','L'], advanced:[],      eliminated:true  },
+    { id:'germany',     player:'JR',     name:'Germany',        results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { id:'morocco',     player:'JR',     name:'Morocco',        results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'paraguay',    player:'JR',     name:'Paraguay',       results:['L','W','D'], advanced:['R32'], eliminated:false },
+    { id:'iran',        player:'JR',     name:'Iran',           results:['D','D','D'], advanced:[],      eliminated:true  },
+    { id:'netherlands', player:'Kyle',   name:'Netherlands',    results:['D','W','W'], advanced:['R32'], eliminated:false },
+    { id:'usa',         player:'Kyle',   name:'USA',            results:['W','W','L'], advanced:['R32'], eliminated:false },
+    { id:'algeria',     player:'Kyle',   name:'Algeria',        results:['L','W','D'], advanced:['R32'], eliminated:false },
+    { id:'czechia',     player:'Kyle',   name:'Czechia',        results:['L','D','L'], advanced:[],      eliminated:true  },
+    { id:'belgium',     player:'Austin', name:'Belgium',        results:['D','D','W'], advanced:['R32'], eliminated:false },
+    { id:'uruguay',     player:'Austin', name:'Uruguay',        results:['D','D','L'], advanced:[],      eliminated:true  },
+    { id:'ghana',       player:'Austin', name:'Ghana',          results:['W','D','L'], advanced:['R32'], eliminated:false },
+    { id:'southkorea',  player:'Austin', name:'South Korea',    results:['W','L','L'], advanced:[],      eliminated:true  },
   ];
 
   const FLAGS = {
     'Brazil':'🇧🇷','Croatia':'🇭🇷','Ivory Coast':'🇨🇮','Cape Verde':'🇨🇻',
-    'England':'🏴','Mexico':'🇲🇽','Senegal':'🇸🇳','Uzbekistan':'🇺🇿',
+    'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Mexico':'🇲🇽','Senegal':'🇸🇳','Uzbekistan':'🇺🇿',
     'Norway':'🇳🇴','Colombia':'🇨🇴','Bosnia & Herz.':'🇧🇦','Egypt':'🇪🇬',
     'Netherlands':'🇳🇱','USA':'🇺🇸','Algeria':'🇩🇿','Czechia':'🇨🇿',
     'Spain':'🇪🇸','Ecuador':'🇪🇨','Sweden':'🇸🇪','Panama':'🇵🇦',
     'Germany':'🇩🇪','Morocco':'🇲🇦','Paraguay':'🇵🇾','Iran':'🇮🇷',
     'Argentina':'🇦🇷','Japan':'🇯🇵','Canada':'🇨🇦','Australia':'🇦🇺',
     'France':'🇫🇷','Austria':'🇦🇹','Turkey':'🇹🇷','Haiti':'🇭🇹',
-    'Portugal':'🇵🇹','Switzerland':'🇨🇭','Scotland':'🏴','Tunisia':'🇹🇳',
+    'Portugal':'🇵🇹','Switzerland':'🇨🇭','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Tunisia':'🇹🇳',
     'Belgium':'🇧🇪','Uruguay':'🇺🇾','Ghana':'🇬🇭','South Korea':'🇰🇷'
   };
+
   const TAGLINES = {
     'Burk':'Blood. Sweat. Brasil.','Rami':'Clinical. Composed. Champion.',
     'Brett':'Cold Weather. Hot Takes.','Kyle':'Total Football. Total Chaos.',
@@ -249,79 +236,44 @@
     'JR':'Press. Attack. Repeat.','Van':'Adventure Mode: ON.',
     'Zack':'Play Fast. Win Big.','Austin':'Built Different.'
   };
+
   const ADV_PTS    = {R32:3,R16:4,QF:5,SF:6,F:7,W:8};
   const ADV_LABELS = {R32:'R32',R16:'R16',QF:'QF',SF:'SF',F:'Final',W:'Champ'};
-  // Projected bonus points based on current tournament state.
-  // Only alive teams get a bonus. Bonus = expected additional pts from remaining rounds.
-  // ADV pts: R16=4, QF=5, SF=6, F=7, W=8
-  // A team in R16 could still earn: QF(5)+SF(6)+F(7)+W(8) = 26 max additional
-  // We assign a realistic expected value based on team strength.
+  const ROUND_PTS  = {R16:4,QF:5,SF:6,F:7,W:8};
+  const ROUND_ORDER = ['R16','QF','SF','F','W'];
 
   const TEAM_STRENGTH = {
-    // Tier 1 — genuine contenders (expected to reach SF+)
     'France':4,'Argentina':4,'Spain':4,'Brazil':4,
-    // Tier 2 — strong QF contenders
-    'England':3,'Portugal':3,'Morocco':3,'Colombia':3,
-    'Norway':3,'Mexico':3,'Switzerland':3,
-    // Tier 3 — likely R16/QF exit
-    'Belgium':2,'Egypt':2,'Japan':2,'Canada':2,
-    'USA':2,'Paraguay':2,'Austria':2,'Senegal':2,
-    // Tier 4 — likely early exit
-    'Bosnia & Herz.':1,'Algeria':1,'Ghana':1,'Cape Verde':1,
-    'Ecuador':1,'Sweden':1,'Croatia':1,
+    'England':3,'Portugal':3,'Morocco':3,'Colombia':3,'Norway':3,'Mexico':3,'Switzerland':3,
+    'Belgium':2,'Egypt':2,'Japan':2,'Canada':2,'USA':2,'Paraguay':2,'Austria':2,'Senegal':2,
+    'Bosnia & Herz.':1,'Algeria':1,'Ghana':1,'Cape Verde':1,'Ecuador':1,'Sweden':1,'Croatia':1,
   };
 
-  // Points available per round win from current position
-  const ROUND_PTS = { R16:4, QF:5, SF:6, F:7, W:8 };
-  const ROUND_ORDER = ['R16','QF','SF','F','W'];
+  function calcTeamPts(t) {
+    let pts = 0;
+    t.results.forEach(r => { if (r==='W') pts+=2; else if (r==='D') pts+=1; });
+    t.advanced.forEach(s => { pts += (ADV_PTS[s]||0); });
+    return pts;
+  }
+
+  function calcPlayerPts(p) { return p.teams.reduce((s,t) => s+calcTeamPts(t), 0); }
 
   function calcProjected(player) {
     const current = calcPlayerPts(player);
     let bonus = 0;
+    const WIN_PROB = {4:0.7, 3:0.5, 2:0.3, 1:0.15};
     player.teams.forEach(t => {
       if (t.eliminated) return;
       const tier = TEAM_STRENGTH[t.name] || 1;
-      // Find which rounds are still ahead for this team
       const lastAdv = t.advanced[t.advanced.length - 1];
       const lastIdx = ROUND_ORDER.indexOf(lastAdv);
-      const remainingRounds = ROUND_ORDER.slice(lastIdx + 1);
-      // Expected rounds won = tier-based fraction of remaining rounds
-      const fractions = { 4: 0.7, 3: 0.5, 2: 0.3, 1: 0.15 };
-      const winProb = fractions[tier] || 0.15;
-      remainingRounds.forEach((round, i) => {
-        // Probability of reaching each successive round decreases
-        const prob = Math.pow(winProb, i + 1);
-        bonus += prob * ROUND_PTS[round];
+      const remaining = ROUND_ORDER.slice(lastIdx + 1);
+      const prob = WIN_PROB[tier] || 0.15;
+      remaining.forEach((round, i) => {
+        bonus += Math.pow(prob, i+1) * ROUND_PTS[round];
       });
     });
     return Math.round(current + bonus);
-  }
-
-  let teamsData = [];
-  let isAdmin = false;
-  let openBreakdown = null;
-
-  // Seed the database if it's empty (first run only)
-  async function seedIfEmpty() {
-    const snap = await getDocs(teamsCollection);
-    if (snap.empty) {
-      const batch = writeBatch(db);
-      SEED_DATA.forEach(t => {
-        batch.set(doc(db, "teams", t.id), {
-          player: t.player, name: t.name, results: t.results,
-          advanced: t.advanced, eliminated: t.eliminated
-        });
-      });
-      await batch.commit();
-      console.log("Seeded initial data");
-    }
-  }
-
-  function calcTeamPts(t) {
-    let pts = 0;
-    t.results.forEach(r => { if (r === 'W') pts += 2; else if (r === 'D') pts += 1; });
-    t.advanced.forEach(s => { pts += (ADV_PTS[s] || 0); });
-    return pts;
   }
 
   function groupByPlayer() {
@@ -333,33 +285,42 @@
     return Object.entries(map).map(([name, teams]) => ({ name, teams }));
   }
 
-  window.toggleBreakdown = function(name) {
-    openBreakdown = openBreakdown === name ? null : name;
-    render();
-  };
+  let teamsData = [];
+  let isAdmin = false;
+  let openBreakdown = null;
+
+  async function seedIfEmpty() {
+    const snap = await getDocs(teamsCollection);
+    if (snap.empty) {
+      const batch = writeBatch(db);
+      SEED_DATA.forEach(t => {
+        batch.set(doc(db, "teams", t.id), {
+          player:t.player, name:t.name, results:t.results,
+          advanced:t.advanced, eliminated:t.eliminated
+        });
+      });
+      await batch.commit();
+    }
+  }
 
   function render() {
-    const players = groupByPlayer().sort((a, b) => calcPlayerPts(b) - calcPlayerPts(a));
+    const players = groupByPlayer().sort((a,b) => calcPlayerPts(b)-calcPlayerPts(a));
     const container = document.getElementById('leaderboard');
     container.innerHTML = '';
-
     players.forEach((player, i) => {
-      const rank = i + 1, pts = calcPlayerPts(player), proj = calcProjected(player);
+      const rank = i+1, pts = calcPlayerPts(player), proj = calcProjected(player);
       const isOpen = openBreakdown === player.name;
-
       const card = document.createElement('div');
-      card.className = `leader-card rank-${rank <= 3 ? rank : 'other'}`;
-      card.onclick = () => window.toggleBreakdown(player.name);
-
+      card.className = `leader-card rank-${rank<=3?rank:'other'}`;
+      card.onclick = () => { openBreakdown = openBreakdown===player.name?null:player.name; render(); };
       const pills = player.teams.map(t =>
-        `<span class="team-pill ${t.eliminated ? 'eliminated' : 'alive'}">${FLAGS[t.name] || ''} ${t.name}</span>`
+        `<span class="team-pill ${t.eliminated?'eliminated':'alive'}">${FLAGS[t.name]||''} ${t.name}</span>`
       ).join('');
-
       card.innerHTML = `
         <div class="rank-num">${rank}</div>
         <div class="player-info">
           <div class="player-name">${player.name}</div>
-          <div class="player-tagline">${TAGLINES[player.name] || ''}</div>
+          <div class="player-tagline">${TAGLINES[player.name]||''}</div>
         </div>
         <div class="teams-row">${pills}</div>
         <div class="score-block">
@@ -368,16 +329,15 @@
           <div class="score-proj">proj ~${proj}</div>
         </div>`;
       container.appendChild(card);
-
       const panel = document.createElement('div');
-      panel.className = `breakdown-panel ${isOpen ? 'open' : ''}`;
+      panel.className = `breakdown-panel ${isOpen?'open':''}`;
       const teamsHTML = player.teams.map(t => {
         const tPts = calcTeamPts(t);
-        const resHTML = t.results.map(r => `<span class="result-badge ${r}">${r}</span>`).join('');
-        const advHTML = t.advanced.map(a => `<span class="result-badge adv">${ADV_LABELS[a]}</span>`).join('');
+        const resHTML = t.results.map(r=>`<span class="result-badge ${r}">${r}</span>`).join('');
+        const advHTML = t.advanced.map(a=>`<span class="result-badge adv">${ADV_LABELS[a]}</span>`).join('');
         const elimBadge = t.eliminated ? `<span class="result-badge elim">OUT</span>` : '';
-        return `<div class="breakdown-team" style="${t.eliminated ? 'opacity:.5' : ''}">
-          <div class="breakdown-team-name">${FLAGS[t.name] || ''} ${t.name}</div>
+        return `<div class="breakdown-team" style="${t.eliminated?'opacity:.5':''}">
+          <div class="breakdown-team-name">${FLAGS[t.name]||''} ${t.name}</div>
           <div class="match-results">${resHTML}${advHTML}${elimBadge}</div>
           <div class="team-pts">${tPts}</div>
         </div>`;
@@ -387,18 +347,16 @@
     });
   }
 
-  // Real-time listener — any change in Firestore instantly re-renders for everyone
   function startListening() {
-    onSnapshot(teamsCollection, (snapshot) => {
-      teamsData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    onSnapshot(teamsCollection, snap => {
+      teamsData = snap.docs.map(d => ({id:d.id,...d.data()}));
       render();
       document.getElementById('lastUpdated').textContent = 'Live · Updated ' + new Date().toLocaleString();
       document.getElementById('connDot').classList.remove('offline');
       document.getElementById('connText').textContent = 'Connected · Live updates active';
-    }, (err) => {
-      console.error(err);
+    }, err => {
       document.getElementById('connDot').classList.add('offline');
-      document.getElementById('connText').textContent = 'Connection error — check Firebase config';
+      document.getElementById('connText').textContent = 'Connection error';
     });
   }
 
@@ -406,19 +364,18 @@
     try {
       await seedIfEmpty();
       startListening();
-    } catch (e) {
-      console.error(e);
+    } catch(e) {
       document.getElementById('connDot').classList.add('offline');
-      document.getElementById('connText').textContent = 'Connection failed — check your Firebase config values';
+      document.getElementById('connText').textContent = 'Connection failed — check Firebase config';
       document.getElementById('lastUpdated').textContent = 'Offline';
     }
   }
 
   window.showTab = function(tab, e) {
-    document.getElementById('tab-leaderboard').classList.toggle('hidden', tab !== 'leaderboard');
-    document.getElementById('tab-scoring').classList.toggle('hidden', tab !== 'scoring');
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    if (e && e.target) e.target.classList.add('active');
+    document.getElementById('tab-leaderboard').classList.toggle('hidden', tab!=='leaderboard');
+    document.getElementById('tab-scoring').classList.toggle('hidden', tab!=='scoring');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    if (e&&e.target) e.target.classList.add('active');
   };
 
   window.openAdmin = function() {
@@ -429,8 +386,7 @@
     document.getElementById('adminModal').classList.remove('open');
   };
   window.checkPassword = function() {
-    const val = document.getElementById('adminPassword').value;
-    if (val === ADMIN_PASSWORD) {
+    if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
       isAdmin = true;
       showAdminEdit();
     } else {
@@ -447,84 +403,77 @@
   function renderAdminList() {
     const list = document.getElementById('adminTeamsList');
     list.innerHTML = '';
-    teamsData.sort((a,b) => a.player.localeCompare(b.player)).forEach(t => {
+    teamsData.sort((a,b)=>a.player.localeCompare(b.player)).forEach(t => {
       const row = document.createElement('div');
       row.className = 'admin-row';
-      const resultSelects = [0,1,2].map(i =>
-        `<select onchange="updateResult('${t.id}',${i},this.value)">
-          ${['?','W','D','L'].map(v => `<option value="${v}" ${t.results[i]===v?'selected':''}>${v}</option>`).join('')}
+      const selects = [0,1,2].map(i =>
+        `<select onchange="window.updateResult('${t.id}',${i},this.value)">
+          ${['?','W','D','L'].map(v=>`<option value="${v}" ${t.results[i]===v?'selected':''}>${v}</option>`).join('')}
         </select>`
       ).join('');
       row.innerHTML = `
         <span>${t.player} — ${t.name}</span>
-        ${resultSelects}
+        ${selects}
         <label style="font-size:.7rem;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" ${t.eliminated?'checked':''} onchange="updateEliminated('${t.id}',this.checked)"> OUT
+          <input type="checkbox" ${t.eliminated?'checked':''} onchange="window.updateEliminated('${t.id}',this.checked)"> OUT
         </label>`;
       list.appendChild(row);
     });
   }
 
   window.updateResult = async function(teamId, index, value) {
-    const team = teamsData.find(t => t.id === teamId);
+    const team = teamsData.find(t=>t.id===teamId);
     if (!team) return;
     const newResults = [...team.results];
     newResults[index] = value;
-    await setDoc(doc(db, "teams", teamId), { ...team, results: newResults }, { merge: true });
+    await setDoc(doc(db,"teams",teamId), {...team, results:newResults}, {merge:true});
   };
 
   window.updateEliminated = async function(teamId, checked) {
-    await setDoc(doc(db, "teams", teamId), { eliminated: checked }, { merge: true });
+    await setDoc(doc(db,"teams",teamId), {eliminated:checked}, {merge:true});
   };
 
-  // Calls your Vercel serverless function, which fetches ESPN and writes
-  // updated results into Firestore. The onSnapshot listener above will
-  // automatically pick up the changes and re-render — no manual refresh needed.
   window.resetData = async function() {
     if (!confirm('This will wipe all Firestore data and reseed from scratch. Are you sure?')) return;
     const btn = document.getElementById('resetBtn');
     const status = document.getElementById('syncStatus');
-    btn.disabled = true;
-    btn.textContent = '⚠️ Resetting...';
-    status.textContent = '';
+    btn.disabled = true; btn.textContent = '⚠️ Resetting...'; status.textContent = '';
     try {
-      const res = await fetch('/api/reset-data', { method: 'POST' });
+      const res = await fetch('/api/reset-data', {method:'POST'});
       const result = await res.json();
       if (result.success) {
         status.textContent = `✅ ${result.message}`;
         status.style.color = 'var(--green)';
       } else {
-        status.textContent = `⚠️ ${result.error || 'Reset failed'}`;
+        status.textContent = `⚠️ ${result.error||'Reset failed'}`;
         status.style.color = 'var(--red)';
       }
-    } catch (e) {
+    } catch(e) {
       status.textContent = `⚠️ Could not reach reset endpoint: ${e.message}`;
       status.style.color = 'var(--red)';
     }
-    btn.disabled = false;
-    btn.textContent = '⚠️ Reset All Data to Seed';
+    btn.disabled = false; btn.textContent = '⚠️ Reset All Data to Seed';
   };
+
+  window.syncLiveScores = async function() {
     const btn = document.getElementById('syncBtn');
     const status = document.getElementById('syncStatus');
-    btn.disabled = true;
-    btn.textContent = '🔄 Syncing...';
-    status.textContent = '';
+    btn.disabled = true; btn.textContent = '🔄 Syncing...'; status.textContent = '';
     try {
-      const res = await fetch('/api/sync-scores', { method: 'POST' });
+      const res = await fetch('/api/sync-scores', {method:'POST'});
       const result = await res.json();
       if (result.success) {
         status.textContent = `✅ Synced ${result.matchesProcessed} matches, updated ${result.teamsUpdated} teams.`;
         status.style.color = 'var(--green)';
       } else {
-        status.textContent = `⚠️ ${result.error || 'Sync failed'}`;
+        status.textContent = `⚠️ ${result.error||'Sync failed'}`;
         status.style.color = 'var(--red)';
       }
-    } catch (e) {
+    } catch(e) {
       status.textContent = `⚠️ Could not reach sync endpoint: ${e.message}`;
       status.style.color = 'var(--red)';
     }
-    btn.disabled = false;
-    btn.textContent = '🔄 Sync Live Scores from ESPN';
+    btn.disabled = false; btn.textContent = '🔄 Sync Live Scores from ESPN';
   };
 
   init();
